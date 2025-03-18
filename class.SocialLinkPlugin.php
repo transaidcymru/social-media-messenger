@@ -31,7 +31,7 @@ class SocialLinkPlugin extends Plugin {
             global $ost;
             // Send an alert to the system admin:
             //$ost->alertAdmin(self::PLUGIN_NAME . ' has been uninstalled', "You wanted that right?", true);
-            $ost->logDebug(self::PLUGIN_NAME, "Plugin has been uninstalled!!!", false);
+            $ost->logError(self::PLUGIN_NAME, "Plugin has been uninstalled!!!", false);
 
             parent::uninstall($errors);
     }
