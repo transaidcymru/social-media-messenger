@@ -17,8 +17,11 @@ require_once 'config.php';
 class SocialLinkPlugin extends Plugin {
     var $config_class = 'SocialLinkPluginConfig'; 
 
-    public function bootstrap() {
+    const PLUGIN_NAME = "Social Link Plugin";
 
+    public function bootstrap() {
+        global $ost;
+        $ost->logWarning(self::PLUGIN_NAME, "A fun message.",false);
     }
 
     public function getForm() {
