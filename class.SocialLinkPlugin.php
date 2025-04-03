@@ -24,7 +24,7 @@ class SocialLinkPlugin extends Plugin {
         Signal::connect('ticket.created', array($this, 'onTicketCreated'), 'Ticket');
         try {
             $ver = db_version();
-            error_log("version:".$ver);
+            error_log("bootstrap version:".$ver);
         }
         catch(Exception $e) {
             error_log("shit");
