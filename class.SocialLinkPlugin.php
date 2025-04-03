@@ -13,6 +13,7 @@ foreach ([
     require_once INCLUDE_DIR . "class.$c.php";
 }
 require_once 'config.php';
+require_once 'mysqli.php';
 
 class SocialLinkPlugin extends Plugin {
     var $config_class = 'SocialLinkPluginConfig'; 
@@ -20,6 +21,20 @@ class SocialLinkPlugin extends Plugin {
     const PLUGIN_NAME = "Social Link Plugin";
 
     public function bootstrap() {
+        Signal::connect('ticket.created', array($this, 'onTicketCreated'), 'Ticket');
+
+    }
+
+    public function onTicketCreated($ticket) {
+        try {
+            global $ost;
+            $ver = db_version();
+            $ost->logError("version:".$ver);
+            error_log("version:".$ver);
+        }
+        catch(Exception $e) {
+            error_log("shit");
+        }
     }
 
     public function getForm() {
