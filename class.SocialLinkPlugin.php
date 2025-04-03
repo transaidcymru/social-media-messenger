@@ -28,6 +28,7 @@ class SocialLinkPlugin extends Plugin {
         }
         catch(Exception $e) {
             error_log("shit");
+        }
 
     }
 
