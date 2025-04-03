@@ -29,7 +29,7 @@ class SocialLinkPlugin extends Plugin {
         try {
             global $ost;
             $ver = db_version();
-            $ost->logError("version:".$ver);
+            $ost->logError(self::PLUGIN_NAME, "version:".$ver, false);
             error_log("version:".$ver);
         }
         catch(Exception $e) {
