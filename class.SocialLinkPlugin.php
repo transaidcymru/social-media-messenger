@@ -26,6 +26,7 @@ class SocialLinkPlugin extends Plugin {
         Signal::connect('cron', array($this, 'fetch'));
 
         try {
+            error_log(self::PLUGIN_NAME . "testing presence of table...");
             $test_query = db_query("SHOW tables LIKE '".self::TABLE_NAME."';");
 
             if (false === $test_query)
@@ -41,6 +42,7 @@ class SocialLinkPlugin extends Plugin {
 
             if (!($test_query->num_rows > 0))
             {
+                error_log(self::PLUGIN_NAME . "table does not exist. creating table...");
                 $create_table_query = db_query("CREATE TABLE `tac_socialSessions` ( `session_id` int(11) unsigned not NULL auto_increment, `ticket_id` int(11) unsigned NOT NULL, `chat_id` varchar(100) NOT NULL, `platform` enum('Unknown','Facebook','Instagram','Bluesky') NOT NULL default 'Unknown', `timestamp_start` datetime NOT NULL, `timestamp_end` datetime NOT NULL, `session_type` varchar(30), PRIMARY KEY  (`session_id`)) DEFAULT CHARSET=utf8;");
 
                 if (!$create_table_query)
@@ -49,7 +51,13 @@ class SocialLinkPlugin extends Plugin {
                     return;
                 }
                 error_log(self::PLUGIN_NAME . "successfully created table.");
+            } else {
+                error_log(self::PLUGIN_NAME . "table does not exist. creating table...");
             }
+
+            $result = db_query("INSERT INTO tac_socialSessions (ticket_id, chat_id, platform, timestamp_start, timestamp_end, session_type)
+VALUES (312, 312, 'Bluesky', '1970-01-01 00:00:05', '1970-01-01 00:00:09', 'helo');");
+
         }
         catch(Exception $e) {
             error_log("shit");
