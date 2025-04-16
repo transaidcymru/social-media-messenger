@@ -63,11 +63,14 @@ class SocialLinkPlugin extends Plugin {
             }
             else if($query_2->row_count > 0)
             {
-                error_log("2 WE are here!".$test_query->row_count);
+                error_log("2 WE are here!".$query_2->row_count);
                 error_log($query_2->fetch_all());
             }
             else {
                 error_log("2 a third, different thing");
+                error_log(strval($query_2));
+                error_log("2 WE are here!".$query_2->row_count);
+                error_log($query_2->fetch_all());
             }
 
         }
