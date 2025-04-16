@@ -33,10 +33,43 @@ class SocialLinkPlugin extends Plugin {
             error_log("shit");
         }
 
-        error_log("SHOW tables LIKE '".self::TABLE_NAME."';");
-        error_log(db_query("SHOW tables LIKE '".self::TABLE_NAME."';"));
-        error_log("SHOW tables LIKE 'ost_dev_ticket';");
-        error_log(db_query("SHOW tables LIKE 'ost_dev_ticket';"));
+        $test_query = db_query("SHOW tables LIKE '".self::TABLE_NAME."';");
+
+        if(false === $test_query)
+        {
+            error_log("1 Error querying database");
+            return;
+        }
+
+        if(true === $test_query)
+        {
+            error_log("1 this can happen i guess?");
+            return;
+        }
+
+        if($test_query->row_count > 0)
+        {
+            error_log("1 WE are here!");
+        }
+
+        $query_2 = db_query("SHOW tables LIKE 'ost_dev_ticket';");
+
+        if(false === $query_2)
+        {
+            error_log("2 Error querying database");
+            return;
+        }
+
+        if(true === $query_2)
+        {
+            error_log("2 this can happen i guess?");
+            return;
+        }
+
+        if($query_2->row_count > 0)
+        {
+            error_log("2 WE are here!");
+        }
 
     }
 
