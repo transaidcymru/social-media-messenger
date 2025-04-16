@@ -26,49 +26,53 @@ class SocialLinkPlugin extends Plugin {
         Signal::connect('cron', array($this, 'fetch'));
 
         try {
-            $ver = db_version();
-            error_log("bootstrap version:".$ver);
+            $test_query = db_query("SHOW tables LIKE '".self::TABLE_NAME."';");
+
+            if(false === $test_query)
+            {
+                error_log("1 Error querying database");
+                return;
+            }
+
+            if(true === $test_query)
+            {
+                error_log("1 this can happen i guess?");
+                return;
+            }
+
+            if($test_query->row_count > 0)
+            {
+                error_log("1 WE are here!".$test_query->row_count);
+                error_log($test_query->fetch_all());
+            }
+            else {
+                error_log("1 a third, different thing");
+            }
+
+            $query_2 = db_query("SHOW tables;");
+
+            if(false === $query_2)
+            {
+                error_log("2 Error querying database");
+                return;
+            }
+            else if(true === $query_2)
+            {
+                error_log("2 this can happen i guess?");
+                return;
+            }
+            else if($query_2->row_count > 0)
+            {
+                error_log("2 WE are here!".$test_query->row_count);
+                error_log($query_2->fetch_all());
+            }
+            else {
+                error_log("2 a third, different thing");
+            }
+
         }
         catch(Exception $e) {
             error_log("shit");
-        }
-
-        $test_query = db_query("SHOW tables LIKE '".self::TABLE_NAME."';");
-
-        if(false === $test_query)
-        {
-            error_log("1 Error querying database");
-            return;
-        }
-
-        if(true === $test_query)
-        {
-            error_log("1 this can happen i guess?");
-            return;
-        }
-
-        if($test_query->row_count > 0)
-        {
-            error_log("1 WE are here!");
-        }
-
-        $query_2 = db_query("SHOW tables LIKE 'ost_dev_ticket';");
-
-        if(false === $query_2)
-        {
-            error_log("2 Error querying database");
-            return;
-        }
-
-        if(true === $query_2)
-        {
-            error_log("2 this can happen i guess?");
-            return;
-        }
-
-        if($query_2->row_count > 0)
-        {
-            error_log("2 WE are here!");
         }
 
     }
