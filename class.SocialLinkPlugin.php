@@ -40,9 +40,9 @@ class SocialLinkPlugin extends Plugin {
                 return;
             }
 
-            if($test_query->row_count > 0)
+            if($test_query->num_rows > 0)
             {
-                error_log("1 WE are here!".$test_query->row_count);
+                error_log("1 WE are here!".$test_query->num_rows);
                 error_log($test_query->fetch_all());
             }
             else {
@@ -61,14 +61,14 @@ class SocialLinkPlugin extends Plugin {
                 error_log("2 this can happen i guess?");
                 return;
             }
-            else if($query_2->row_count > 0)
+            else if($query_2->num_rows > 0)
             {
-                error_log("2 WE are here!".$query_2->row_count);
+                error_log("2 WE are here!".$query_2->num_rows);
                 error_log($query_2->fetch_all());
             }
             else {
                 error_log("2 a third, different thing");
-                error_log("2".strval($query_2->row_count));
+                error_log("2 ".strval($query_2->num_rows));
                 error_log(strval($query_2->fetch_all()));
             }
 
