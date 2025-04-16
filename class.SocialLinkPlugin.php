@@ -68,8 +68,8 @@ class SocialLinkPlugin extends Plugin {
             }
             else {
                 error_log("2 a third, different thing");
-                error_log("2 WE are here!".$query_2->row_count);
-                error_log($query_2->fetch_all());
+                error_log("2".$query_2->row_count);
+                error_log(strval($query_2->fetch_all()));
             }
 
         }
