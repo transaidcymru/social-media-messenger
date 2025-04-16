@@ -19,9 +19,12 @@ class SocialLinkPlugin extends Plugin {
     var $config_class = 'SocialLinkPluginConfig'; 
 
     const PLUGIN_NAME = "Social Link Plugin";
+    const TABLE_NAME = "tac_socialSessions";
 
     public function bootstrap() {
-        Signal::connect('ticket.created', array($this, 'onTicketCreated'), 'Ticket');
+        Signal::connect('threadentry.created', array($this, 'threadUpdate'), 'Ticket');
+        Signal::connect('cron', array($this, 'fetch'));
+
         try {
             $ver = db_version();
             error_log("bootstrap version:".$ver);
@@ -30,18 +33,21 @@ class SocialLinkPlugin extends Plugin {
             error_log("shit");
         }
 
+        error_log("SHOW tables LIKE '".self::TABLE_NAME."';");
+        error_log(db_query("SHOW tables LIKE '".self::TABLE_NAME."';"));
+        error_log("SHOW tables LIKE 'ost_dev_ticket';");
+        error_log(db_query("SHOW tables LIKE 'ost_dev_ticket';"));
+
     }
 
-    public function onTicketCreated($ticket) {
-        try {
-            global $ost;
-            $ver = db_version();
-            $ost->logError(self::PLUGIN_NAME, "version:".$ver, false);
-            error_log("version:".$ver);
-        }
-        catch(Exception $e) {
-            error_log("shit");
-        }
+    public function onThreadUpdate($threadentry) {
+        // filter out thread updates we don't care about.
+        // push to social media
+
+    }
+
+    public function fetch($object, $data) {
+        // pull messages from social media and sync
     }
 
     public function getForm() {
