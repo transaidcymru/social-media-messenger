@@ -48,6 +48,7 @@ class SocialLinkPlugin extends Plugin {
                     error_log(self::PLUGIN_NAME . ": error creating table in database");
                     return;
                 }
+                error_log(self::PLUGIN_NAME . "successfully created table.");
             }
         }
         catch(Exception $e) {
