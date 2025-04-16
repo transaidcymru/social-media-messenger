@@ -28,50 +28,27 @@ class SocialLinkPlugin extends Plugin {
         try {
             $test_query = db_query("SHOW tables LIKE '".self::TABLE_NAME."';");
 
-            if(false === $test_query)
+            if (false === $test_query)
             {
-                error_log("1 Error querying database");
+                error_log(self::PLUGIN_NAME.": Error querying database");
+                return;
+            }
+            if (true === $test_query)
+            {
+                error_log(self::PLUGIN_NAME.": unexpected query result");
                 return;
             }
 
-            if(true === $test_query)
+            if (!($test_query->num_rows > 0))
             {
-                error_log("1 this can happen i guess?");
-                return;
-            }
+                $create_table_query = db_query("CREATE TABLE `tac_socialSessions` ( `session_id` int(11) unsigned not NULL auto_increment, `ticket_id` int(11) unsigned NOT NULL, `chat_id` varchar(100) NOT NULL, `platform` enum('Unknown','Facebook','Instagram','Bluesky') NOT NULL default 'Unknown', `timestamp_start` datetime NOT NULL, `timestamp_end` datetime NOT NULL, `session_type` varchar(30), PRIMARY KEY  (`session_id`)) DEFAULT CHARSET=utf8;");
 
-            if($test_query->num_rows > 0)
-            {
-                error_log("1 WE are here!".$test_query->num_rows);
-                error_log($test_query->fetch_all());
+                if (!$create_table_query)
+                {
+                    error_log(self::PLUGIN_NAME . ": error creating table in database");
+                    return;
+                }
             }
-            else {
-                error_log("1 a third, different thing");
-            }
-
-            $query_2 = db_query("SHOW tables;");
-
-            if(false === $query_2)
-            {
-                error_log("2 Error querying database");
-                return;
-            }
-            else if(true === $query_2)
-            {
-                error_log("2 this can happen i guess?");
-                return;
-            }
-            else if($query_2->num_rows > 0)
-            {
-                error_log("2 WE are here!".$query_2->num_rows);
-                error_log($query_2->fetch_all());
-            }
-            else {
-                error_log("2 a third, different thing");
-                error_log("2 ".strval($query_2->num_rows));
-                error_log(strval($query_2->fetch_all()));
-            }
-
         }
         catch(Exception $e) {
             error_log("shit");
