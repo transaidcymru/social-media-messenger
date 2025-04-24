@@ -66,7 +66,14 @@ class SocialLinkPlugin extends Plugin {
     public function onThreadUpdate($threadentry) {
         // Get associated ticket
         $ticket_id = $threadentry->getParent();
-        $ticket = Ticket::objects()->filter(array("ticket_id" => $ticket_id));
+        $ticket_query = Ticket::objects()->filter(array("ticket_id" => $ticket_id));
+        if ($ticket_query->count() != 1)
+        {
+            error_log(self::PLUGIN_NAME.": SHIT");
+            return;
+        }
+
+        $ticket = $ticket_query[0];
 
         $source_extra_query = db_query(
             "SELECT source_extra from ".TICKET_TABLE." WHERE ticket_id=" . strval($ticket_id) . ";");
