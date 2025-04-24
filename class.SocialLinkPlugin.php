@@ -12,6 +12,7 @@ foreach ([
 ] as $c) {
     require_once INCLUDE_DIR . "class.$c.php";
 }
+
 require_once 'config.php';
 require_once 'mysqli.php';
 
@@ -20,6 +21,11 @@ class SocialLinkPlugin extends Plugin {
 
     const PLUGIN_NAME = "Social Link Plugin";
     const TABLE_NAME = "tac_socialSessions";
+    const SOURCES = array(
+        "Bluesky",
+        "Facebook",
+        "Instagram"
+    );
 
     public function bootstrap() {
         Signal::connect('threadentry.created', array($this, 'threadUpdate'), 'Ticket');
@@ -58,9 +64,53 @@ class SocialLinkPlugin extends Plugin {
     }
 
     public function onThreadUpdate($threadentry) {
-        // filter out thread updates we don't care about.
-        // push to social media
+        // Get associated ticket
+        $ticket_id = $threadentry->getParent();
+        $ticket = Ticket::objects()->filter(array("ticket_id" => $ticket_id));
 
+        $source_extra_query = db_query(
+            "SELECT source_extra from ".TICKET_TABLE." WHERE ticket_id=" . strval($ticket_id) . ";");
+
+        if(false === $source_extra_query)
+        {
+            error_log(self::PLUGIN_NAME . ": Database query failure.");
+            return;
+        }
+
+        if($source_extra_query->num_rows != 1)
+        {
+            error_log(self::PLUGIN_NAME . ": something went wrong here");
+            return;
+        }
+
+        $source_extra = $source_extra_query->fetch_assoc()["source_extra"];
+
+        // filter out thread updates we don't care about.
+        if ($ticket->getSource() != "Other" &&
+            !in_array($source_extra, self::SOURCES))
+            return;
+
+        $session_table_query = db_query(
+            "SELECT * from ".self::TABLE_NAME." where ticket-id=" . strval($ticket_id) . ";");
+
+        if(false === $session_table_query)
+        {
+            error_log(self::PLUGIN_NAME . ": Database query failure.");
+            return;
+        }
+
+        if($session_table_query->num_rows != 1)
+        {
+            error_log(self::PLUGIN_NAME . ": what the FUCK");
+            return;
+        }
+
+        // get all of the info from the thread update
+        $session_table_row = $session_table_query->fetch_assoc();
+
+        // push to social media
+        error_log(self::PLUGIN_NAME . ": ARRAY!!! " . json_encode($session_table_row));
+        
     }
 
     public function fetch($object, $data) {
