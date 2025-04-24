@@ -19,6 +19,9 @@ require_once 'mysqli.php';
 class SocialLinkPlugin extends Plugin {
     var $config_class = 'SocialLinkPluginConfig'; 
 
+    var $dummy_api;
+    var $dummy;
+
     const PLUGIN_NAME = "Social Link Plugin";
     const TABLE_NAME = "tac_socialSessions";
     const SOURCES = array(
@@ -28,6 +31,9 @@ class SocialLinkPlugin extends Plugin {
     );
 
     public function bootstrap() {
+        $dummy_api = new SocialLinkAPI();
+        $dummy = new SocialLinkFetcher($dummy_api);
+
         Signal::connect('threadentry.created', array($this, 'threadUpdate'), 'Ticket');
         Signal::connect('cron', array($this, 'fetch'));
 
@@ -122,6 +128,13 @@ class SocialLinkPlugin extends Plugin {
 
     public function fetch($object, $data) {
         // pull messages from social media and sync
+        $social_api = new SocialLinkAPI();
+        $fetcher = new SocialLinkFetcher($social_api);
+        $fetcher->run();
+    }
+
+    private function createMessageEntry(){
+        
     }
 
     public function getForm() {
