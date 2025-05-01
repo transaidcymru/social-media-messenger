@@ -33,7 +33,7 @@ class SocialLinkPlugin extends Plugin {
     );
 
     public function bootstrap() {
-        Signal::connect('threadentry.created', array($this, 'onThreadUpdate'), 'Ticket');
+        Signal::connect('threadentry.created', array($this, 'fetch'));
         Signal::connect('cron', array($this, 'fetch'));
         try {
             $test_query = db_query("SHOW tables LIKE '".self::TABLE_NAME."';");
@@ -69,8 +69,8 @@ class SocialLinkPlugin extends Plugin {
     }
     
 
-    public function onThreadUpdate($threadentry) {
-        $this->fetch(null, null);
+    public function onThreadUpdate($entry, $data) {
+        //$this->fetch(null, null);
 
         return;
 
