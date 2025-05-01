@@ -13,6 +13,7 @@ foreach ([
     require_once INCLUDE_DIR . "class.$c.php";
 }
 
+require_once 'include/plugins/social-media-messenger/class.SocialLinkAPI.php';
 require_once 'config.php';
 require_once 'mysqli.php';
 
