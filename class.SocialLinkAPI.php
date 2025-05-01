@@ -1,5 +1,7 @@
 <?php
 
+error_log("this is actually being required_once");
+
 // Base class for social media API implementations (e.g. Facebook, BlueSky etc.).
 class SocialLinkAPI {
 
