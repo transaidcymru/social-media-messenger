@@ -102,7 +102,7 @@ class SocialLinkFetcher {
     }
 
     public function fetch(){
-        return array("chatid"=>"1", "platform"=>"Facebook", "start"=>"1970-01-01 00:00:01", "end"=>"1970-01-01 00:00:05");
+        return array("chat_id"=>"1", "platform"=>"Facebook", "start"=>"1970-01-01 00:00:01", "end"=>"1970-01-01 00:00:05");
     }
 
     /*
@@ -142,7 +142,7 @@ class SocialLinkFetcher {
         }
 
         // Seach DB for matching chat id sessions
-        $sessions = db_query("SELECT * from tac_socialSessions WHERE chat_id='".$incoming["chatid"]."'");
+        $sessions = db_query("SELECT * from tac_socialSessions WHERE chat_id='".$incoming["chat_id"]."'");
 
         // Error checking
         $ticket = null;
