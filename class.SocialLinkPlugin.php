@@ -14,6 +14,7 @@ foreach ([
 }
 
 require_once 'class.SocialLinkAPI.php';
+require_once 'class.SocialLinkFetcher.php';
 require_once 'config.php';
 require_once 'mysqli.php';
 
