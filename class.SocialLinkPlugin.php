@@ -35,8 +35,6 @@ class SocialLinkPlugin extends Plugin {
     public function bootstrap() {
         Signal::connect('threadentry.created', array($this, 'threadUpdate'), 'Ticket');
         Signal::connect('cron', array($this, 'fetch'));
-        $this->fetch(null, null);
-
         try {
             $test_query = db_query("SHOW tables LIKE '".self::TABLE_NAME."';");
 
@@ -72,6 +70,8 @@ class SocialLinkPlugin extends Plugin {
     
 
     public function onThreadUpdate($threadentry) {
+        $this->fetch(null, null);
+
         // Get associated ticket
         $ticket_id = $threadentry->getParent();
 
