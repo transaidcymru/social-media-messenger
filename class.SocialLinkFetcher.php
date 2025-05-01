@@ -23,9 +23,11 @@ class SocialLinkFetcher {
 
     // Tickets API
     private $ticket_api;
+    private $config;
 
-    function __construct(\SocialLinkAPI $social_api, $charset='UTF-8') {
+    function __construct(\SocialLinkAPI $social_api, $config, $charset='UTF-8') {
         $this->social_api = $social_api;
+        $this->config = $config;
     }
 
     function getMaxFetch() {
@@ -102,7 +104,18 @@ class SocialLinkFetcher {
     }
 
     public function fetch(){
-        return array("chat_id"=>"1", "platform"=>"Facebook", "start"=>"1970-01-01 00:00:01", "end"=>"1970-01-01 00:00:05");
+
+        $query = db_query("SELECT * from tac_socialSessions;");
+        
+        if (false === $query)
+        {
+            error_log("malformed query");
+        }
+        else if ($this->config->get("boop") === "boop" && $query->num_rows === 0)
+        {
+            return array("chat_id" => "1", "platform" => "Facebook", "start" => "1970-01-01 00:00:01", "end" => "1970-01-01 00:00:05");
+        }
+        return null;
     }
 
     /*
@@ -142,18 +155,18 @@ class SocialLinkFetcher {
         }
 
         // Seach DB for matching chat id sessions
-        $sessions = db_query("SELECT * from tac_socialSessions WHERE chat_id='".$incoming["chat_id"]."'");
+        $sessions = db_query("SELECT * from tac_socialSessions WHERE chat_id='" . $incoming["chat_id"] . "';");
 
         // Error checking
         $ticket = null;
         $session = null;
         if (false === $sessions)
         {
-            error_log(self::PLUGIN_NAME.": Error querying database");
+            error_log(": Error querying database");
         }
         else if (true === $sessions)
         {
-            error_log(self::PLUGIN_NAME.": unexpected query result");
+            error_log(": unexpected query result");
         }
         else if (!($sessions->num_rows > 0))
         {
@@ -162,7 +175,7 @@ class SocialLinkFetcher {
             while ($found = $sessions->fetch_assoc())
             {
                 $ticket = Ticket::lookup($found["ticket_id"]);
-                if ($ticket && $ticket->isOpen() && (!$session || $ticket->getCreateDate() > $bestMatch->getCreateDate())){
+                if ($ticket && $ticket->isOpen() && (!$bestMatch || $ticket->getCreateDate() > $bestMatch->getCreateDate())){
                     $session = $found;
                     $bestMatch = $ticket;
                 }

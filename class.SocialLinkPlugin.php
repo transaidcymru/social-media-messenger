@@ -31,11 +31,9 @@ class SocialLinkPlugin extends Plugin {
     );
 
     public function bootstrap() {
-        $dummy_api = new SocialLinkAPI();
-        $dummy = new SocialLinkFetcher($dummy_api);
-
         Signal::connect('threadentry.created', array($this, 'threadUpdate'), 'Ticket');
         Signal::connect('cron', array($this, 'fetch'));
+        $this->fetch(null, null);
 
         try {
             $test_query = db_query("SHOW tables LIKE '".self::TABLE_NAME."';");
@@ -132,7 +130,7 @@ class SocialLinkPlugin extends Plugin {
     public function fetch($object, $data) {
         // pull messages from social media and sync
         $social_api = new SocialLinkAPI();
-        $fetcher = new SocialLinkFetcher($social_api);
+        $fetcher = new SocialLinkFetcher($social_api, $this->getConfig());;
         $fetcher->run();
     }
 
