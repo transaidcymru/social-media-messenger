@@ -56,24 +56,27 @@ class SocialLinkPlugin extends Plugin {
                     return;
                 }
             }
+
         }
         catch(Exception $e) {
             error_log("shit");
         }
 
     }
+    
 
     public function onThreadUpdate($threadentry) {
         // Get associated ticket
         $ticket_id = $threadentry->getParent();
-        $ticket_query = Ticket::objects()->filter(array("ticket_id" => $ticket_id));
-        if ($ticket_query->count() != 1)
+
+        # TODO: Ticket::lookup
+
+        $ticket = Ticket::lookup($ticket_id);
+        if(!$ticket)
         {
-            error_log(self::PLUGIN_NAME.": SHIT");
+            error_log(self::PLUGIN_NAME."NO ticket associated with $ticket_id");
             return;
         }
-
-        $ticket = $ticket_query[0];
 
         $source_extra_query = db_query(
             "SELECT source_extra from ".TICKET_TABLE." WHERE ticket_id=" . strval($ticket_id) . ";");
@@ -122,6 +125,7 @@ class SocialLinkPlugin extends Plugin {
 
     public function fetch($object, $data) {
         // pull messages from social media and sync
+
     }
 
     public function getForm() {

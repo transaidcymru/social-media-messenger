@@ -7,8 +7,8 @@ class SocialLinkPluginConfig extends PluginConfig {
         return [
             'purge-age' => new TextboxField([
                 'default' => '999',
-                'label' => 'Max Ticket age in days',
-                'hint' => 'Tickets with no updates in this many days will match and have their status changed.',
+                'label' => 'boop',
+                'hint' => 'boop',
                 'size' => 5,
                 'length' => 4
             ]),
