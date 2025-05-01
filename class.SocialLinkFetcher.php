@@ -204,11 +204,7 @@ class SocialLinkFetcher {
 
         }
 
-        // Check for new msg from chats
-
-        //foreach ($chat in chats)
-
-        
+        // Check for new msg from chats        
     }
 }
 

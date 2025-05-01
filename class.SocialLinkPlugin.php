@@ -70,12 +70,8 @@ class SocialLinkPlugin extends Plugin {
     
 
     public function onThreadUpdate($entry, $data) {
-        //$this->fetch(null, null);
-
-        return;
-
         // Get associated ticket
-        $ticket_id = $threadentry->getParent();
+        $ticket_id = $entry->getParent();
 
         # TODO: Ticket::lookup
 
