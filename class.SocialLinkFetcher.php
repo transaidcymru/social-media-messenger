@@ -101,6 +101,10 @@ class SocialLinkFetcher {
         }
     }
 
+    public function fetch(){
+        return array("chatid"=>"1", "platform"=>"Facebook", "start"=>"1970-01-01 00:00:01", "end"=>"1970-01-01 00:00:05");
+    }
+
     /*
        MailFetcher::run()
 
@@ -131,7 +135,11 @@ class SocialLinkFetcher {
         ]);
 
         // Incoming dummy message
-        $incoming = array("chatid"=>"1", "platform"=>"Facebook", "start"=>"1970-01-01 00:00:01", "end"=>"1970-01-01 00:00:05");
+        $incoming = $this->fetch();
+
+        if (!$incoming){
+            return;
+        }
 
         // Seach DB for matching chat id sessions
         $sessions = db_query("SELECT * from tac_socialSessions WHERE chat_id='".$incoming["chatid"]."'");
@@ -150,45 +158,42 @@ class SocialLinkFetcher {
         else if (!($sessions->num_rows > 0))
         {
             // Check existing sessions for open ticket
+            $bestMatch = null;
             while ($found = $sessions->fetch_assoc())
             {
-                $ticketid = $found["ticket_id"];
-                $tickets = Ticket::objects()->filter(array("ticket_id" => $ticket_id));
-
-                if ($tickets->count() === 1)
-                {
-                    $ticket = $tickets[0];
-                }
-                else{
-                    error_log("oh no! more than one ticket with the same id...");
+                $ticket = Ticket::lookup($found["ticket_id"]);
+                if ($ticket && $ticket->isOpen() && (!$session || $ticket->getCreateDate() > $bestMatch->getCreateDate())){
+                    $session = $found;
+                    $bestMatch = $ticket;
                 }
             }
         }
         
-        if ($session === null) {
-
+        if (!$session) {
             // TODO: Email is REQUIRED to avoid errors; let's use a dummy email
             $ticket_entry = array("source"=>"API", "source_extra"=>$incoming["platform"], "email"=>"void@transaid.cymru", "name"=>"void");
 
-            $this->getTicketsApi()->createTicket($ticket_entry);
-
             // TODO: Manually set source_extra in DB if need be
+            $errors = array();
+            $ticket = Ticket::create($ticket_entry, $errors, $ticket_entry["source"]);
 
+            $msg = array(
+                "ticket_id"=>$ticket->getId(),
+                "chat_id"=>"1",
+                "platform"=>"Facebook",
+                "timestamp_start"=>"1970-01-01 00:00:01",
+                "timestamp_end"=>"1970-01-01 00:00:05"
+            );
+            
+            db_query(
+                "INSERT INTO tac_socialSessions (ticket_id, chat_id, platform, timestamp_start, timestamp_end)
+    VALUES (".$msg["ticket_id"].", ".$msg["chat_id"].", '".$msg["platform"]."', '".$msg["timestamp_start"]."', '".$msg["timestamp_end"]."');");
 
         }
 
-
-        $msg = array("ticketid"=>, "chatid"=>"1", "platform"=>"Facebook", "start"=>"1970-01-01 00:00:01", "end"=>"1970-01-01 00:00:05");
-        
-
-        
-        db_query(
-            "INSERT INTO tac_socialSessions (ticket_id, chat_id, platform, timestamp_start, timestamp_end)
-VALUES (".$msg["ticketid"].", ".$msg["chatid"].", '".$msg["platform"]."', '".$msg["start"]."', '".$msg["end"]."');");
-    
         // Check for new msg from chats
 
-        foreach ($chat in chats)
+        //foreach ($chat in chats)
 
         
     }
