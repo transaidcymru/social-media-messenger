@@ -139,21 +139,22 @@ class SocialLinkPlugin extends Plugin {
         return array();
     }
 
-    function uninstall(&$errors) {
-            $errors = array();
-            global $ost;
-            // Send an alert to the system admin:
-            //$ost->alertAdmin(self::PLUGIN_NAME . ' has been uninstalled', "You wanted that right?", true);
-            $ost->logError(self::PLUGIN_NAME, "Plugin has been uninstalled!!!", false);
+    function pre_uninstall(&$errors) {
+        $errors = array();
+        global $ost;
+        // Send an alert to the system admin:
+        //$ost->alertAdmin(self::PLUGIN_NAME . ' has been uninstalled', "You wanted that right?", true);
+        $ost->logError(self::PLUGIN_NAME, "Plugin has been uninstalled!!!", false);
+        error_log("uninsalled!!!!");
 
-            $create_table_query = db_query("DROP TABLE IF EXISTS ".self::TABLE_NAME.";");
+        $create_table_query = db_query("DROP TABLE IF EXISTS ".self::TABLE_NAME.";");
 
-            if (!$create_table_query)
-            {
-                error_log(self::PLUGIN_NAME . ": error creating table in database");
-                return;
-            }
-            parent::uninstall($errors);
+        if (!$create_table_query)
+        {
+            error_log(self::PLUGIN_NAME . ": error creating table in database");
+            return;
+        }
+        parent::uninstall($errors);
     }
 }
 ?>
