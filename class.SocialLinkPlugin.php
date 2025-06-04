@@ -33,8 +33,8 @@ class SocialLinkPlugin extends Plugin {
     );
 
     public function bootstrap() {
-        Signal::connect('threadentry.created', array($this, 'fetch'));
-        Signal::connect('cron', array($this, 'fetch'));
+        Signal::connect('threadentry.created', array($this, 'sync'));
+        Signal::connect('cron', array($this, 'sync'));
         try {
             $test_query = db_query("SHOW tables LIKE '".self::TABLE_NAME."';");
 
