@@ -129,24 +129,6 @@ class SocialLinkFetcher {
         if(!$ost->getConfig()->isEmailPollingEnabled())
             return;
 
-        //Hardcoded error control...
-        $MAXERRORS = 5; //Max errors before we start delayed fetch attempts
-        $TIMEOUT = 10; //Timeout in minutes after max errors is reached.
-        $now = \SqlFunction::NOW();
-        // Num errors + last error
-        $interval = new \SqlInterval('MINUTE', $TIMEOUT);
-        $errors_Q = \Q::any([
-                'num_errors__lte' => $MAXERRORS,
-                new \Q(['last_error__lte' => $now->minus($interval)])
-        ]);
-        // Last fetch + frequency
-        $interval = new \SqlInterval('MINUTE', \SqlExpression::plus(new
-                     \SqlCode('fetchfreq'), 0));
-        $fetch_Q = \Q::any([
-                'last_activity__isnull' => true,
-                new \Q(['last_activity__lte' => $now->minus($interval)])
-        ]);
-
         // Incoming dummy message
         $incoming = $this->fetch();
 
@@ -198,7 +180,7 @@ class SocialLinkFetcher {
                 "timestamp_end"=>"1970-01-01 00:00:05"
             );
             
-            db_query(
+            error_log(
                 "INSERT INTO tac_socialSessions (ticket_id, chat_id, platform, timestamp_start, timestamp_end)
     VALUES (".$msg["ticket_id"].", ".$msg["chat_id"].", '".$msg["platform"]."', '".$msg["timestamp_start"]."', '".$msg["timestamp_end"]."');");
 

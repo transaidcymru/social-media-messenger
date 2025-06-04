@@ -73,8 +73,6 @@ class SocialLinkPlugin extends Plugin {
         // Get associated ticket
         $ticket_id = $entry->getParent();
 
-        # TODO: Ticket::lookup
-
         $ticket = Ticket::lookup($ticket_id);
         if(!$ticket)
         {
