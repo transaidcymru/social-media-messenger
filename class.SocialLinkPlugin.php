@@ -132,7 +132,6 @@ class SocialLinkPlugin extends Plugin {
 
         // Incoming dummy message
         $incoming = $this->fetch_messages();
-        return;
 
         if (!$incoming){
             return;
@@ -192,7 +191,6 @@ class SocialLinkPlugin extends Plugin {
     public function fetch_messages()
     {
         $query = db_query("SELECT * from tac_socialSessions;");
-        return;
         
         if (false === $query)
         {
