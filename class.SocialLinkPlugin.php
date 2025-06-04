@@ -72,6 +72,7 @@ class SocialLinkPlugin extends Plugin {
     
 
     public function onThreadUpdate($entry, $data) {
+        return;
         // Get associated ticket
         $ticket_id = $entry->getParent();
 
@@ -134,13 +135,6 @@ class SocialLinkPlugin extends Plugin {
         $social_api = new SocialLinkAPI();
         $fetcher = new SocialLinkFetcher($social_api, $this->getConfig());;
         $fetcher->run();
-    }
-
-    private function createMessageEntry(){
-    }
-
-    public function getForm() {
-        return array();
     }
 
     function pre_uninstall(&$errors) {
