@@ -127,6 +127,8 @@ class SocialLinkPlugin extends Plugin {
 
     public function fetch($object, $data) {
         // pull messages from social media and sync
+        error_log("fetching");
+        return;
         $social_api = new SocialLinkAPI();
         $fetcher = new SocialLinkFetcher($social_api, $this->getConfig());;
         $fetcher->run();
