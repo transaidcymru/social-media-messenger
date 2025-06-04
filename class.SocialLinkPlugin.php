@@ -19,7 +19,7 @@ require_once 'config.php';
 require_once 'mysqli.php';
 
 class SocialLinkPlugin extends Plugin {
-    var $config_class = 'SocialLinkPluginConfig'; 
+    //var $config_class = 'SocialLinkPluginConfig'; 
 
     var $dummy_api;
     var $dummy;
@@ -33,7 +33,6 @@ class SocialLinkPlugin extends Plugin {
     );
 
     public function bootstrap() {
-        error_log("loggin'");
         return;
         //Signal::connect('threadentry.created', array($this, 'fetch'));
         //Signal::connect('cron', array($this, 'fetch'));
