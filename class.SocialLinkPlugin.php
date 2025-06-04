@@ -13,8 +13,8 @@ foreach ([
     require_once INCLUDE_DIR . "class.$c.php";
 }
 
-require_once 'class.SocialLinkAPI.php';
-require_once 'class.SocialLinkFetcher.php';
+//require_once 'class.SocialLinkAPI.php';
+//require_once 'class.SocialLinkFetcher.php';
 require_once 'config.php';
 require_once 'mysqli.php';
 
@@ -131,8 +131,8 @@ class SocialLinkPlugin extends Plugin {
         // pull messages from social media and sync
         error_log("fetching");
         return;
-        $social_api = new SocialLinkAPI();
-        $fetcher = new SocialLinkFetcher($social_api, $this->getConfig());;
+        //$social_api = new SocialLinkAPI();
+        //$fetcher = new SocialLinkFetcher($social_api, $this->getConfig());;
         $fetcher->run();
     }
 
