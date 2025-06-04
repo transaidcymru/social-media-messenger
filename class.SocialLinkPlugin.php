@@ -180,7 +180,7 @@ class SocialLinkPlugin extends Plugin {
                 "timestamp_end"=>"1970-01-01 00:00:05"
             );
             
-            error_log(
+            db_query(
                 "INSERT INTO tac_socialSessions (ticket_id, chat_id, platform, timestamp_start, timestamp_end)
     VALUES (".$msg["ticket_id"].", ".$msg["chat_id"].", '".$msg["platform"]."', '".$msg["timestamp_start"]."', '".$msg["timestamp_end"]."');");
 
