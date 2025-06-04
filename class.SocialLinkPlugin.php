@@ -125,9 +125,84 @@ class SocialLinkPlugin extends Plugin {
         
     }
 
-    public function fetch($object, $data) {
+    public function sync($object, $data) {
         // pull messages from social media and sync
         error_log("fetching");
+        global $ost;
+
+        // Incoming dummy message
+        $incoming = $this->fetch_messages();
+        return;
+
+        if (!$incoming){
+            return;
+        }
+
+        // Seach DB for matching chat id sessions
+        $sessions = db_query("SELECT * from tac_socialSessions WHERE chat_id='" . $incoming["chat_id"] . "';");
+
+        // Error checking
+        $ticket = null;
+        $session = null;
+        if (false === $sessions)
+        {
+            error_log(": Error querying database");
+        }
+        else if (true === $sessions)
+        {
+            error_log(": unexpected query result");
+        }
+        else if (!($sessions->num_rows > 0))
+        {
+            // Check existing sessions for open ticket
+            $bestMatch = null;
+            while ($found = $sessions->fetch_assoc())
+            {
+                $ticket = Ticket::lookup($found["ticket_id"]);
+                if ($ticket && $ticket->isOpen() && (!$bestMatch || $ticket->getCreateDate() > $bestMatch->getCreateDate())){
+                    $session = $found;
+                    $bestMatch = $ticket;
+                }
+            }
+        }
+        if (!$session) {
+            // TODO: Email is REQUIRED to avoid errors; let's use a dummy email
+            $ticket_entry = array("source"=>"API", "source_extra"=>$incoming["platform"], "email"=>"void@transaid.cymru", "name"=>"void");
+
+            // TODO: Manually set source_extra in DB if need be
+            $errors = array();
+            $ticket = Ticket::create($ticket_entry, $errors, $ticket_entry["source"]);
+
+            $msg = array(
+                "ticket_id"=>$ticket->getId(),
+                "chat_id"=>"1",
+                "platform"=>"Facebook",
+                "timestamp_start"=>"1970-01-01 00:00:01",
+                "timestamp_end"=>"1970-01-01 00:00:05"
+            );
+            
+            error_log(
+                "INSERT INTO tac_socialSessions (ticket_id, chat_id, platform, timestamp_start, timestamp_end)
+    VALUES (".$msg["ticket_id"].", ".$msg["chat_id"].", '".$msg["platform"]."', '".$msg["timestamp_start"]."', '".$msg["timestamp_end"]."');");
+
+        }
+
+    }
+
+    public function fetch_messages()
+    {
+        $query = db_query("SELECT * from tac_socialSessions;");
+        return;
+        
+        if (false === $query)
+        {
+            error_log("malformed query");
+        }
+        else if ($query->num_rows === 0)
+        {
+            return array("chat_id" => "1", "platform" => "Facebook", "start" => "1970-01-01 00:00:01", "end" => "1970-01-01 00:00:05");
+        }
+        return null;
     }
 
     function pre_uninstall(&$errors) {
