@@ -106,6 +106,7 @@ class SocialLinkFetcher {
     public function fetch(){
 
         $query = db_query("SELECT * from tac_socialSessions;");
+        return;
         
         if (false === $query)
         {
@@ -131,6 +132,7 @@ class SocialLinkFetcher {
 
         // Incoming dummy message
         $incoming = $this->fetch();
+        return;
 
         if (!$incoming){
             return;
@@ -163,7 +165,6 @@ class SocialLinkFetcher {
                 }
             }
         }
-        
         if (!$session) {
             // TODO: Email is REQUIRED to avoid errors; let's use a dummy email
             $ticket_entry = array("source"=>"API", "source_extra"=>$incoming["platform"], "email"=>"void@transaid.cymru", "name"=>"void");
