@@ -33,9 +33,8 @@ class SocialLinkPlugin extends Plugin {
     );
 
     public function bootstrap() {
-        return;
-        //Signal::connect('threadentry.created', array($this, 'fetch'));
-        //Signal::connect('cron', array($this, 'fetch'));
+        Signal::connect('threadentry.created', array($this, 'fetch'));
+        Signal::connect('cron', array($this, 'fetch'));
         try {
             $test_query = db_query("SHOW tables LIKE '".self::TABLE_NAME."';");
 
@@ -71,7 +70,6 @@ class SocialLinkPlugin extends Plugin {
     
 
     public function onThreadUpdate($entry, $data) {
-        return;
         // Get associated ticket
         $ticket_id = $entry->getParent();
 
@@ -130,10 +128,6 @@ class SocialLinkPlugin extends Plugin {
     public function fetch($object, $data) {
         // pull messages from social media and sync
         error_log("fetching");
-        return;
-        //$social_api = new SocialLinkAPI();
-        //$fetcher = new SocialLinkFetcher($social_api, $this->getConfig());;
-        $fetcher->run();
     }
 
     function pre_uninstall(&$errors) {
