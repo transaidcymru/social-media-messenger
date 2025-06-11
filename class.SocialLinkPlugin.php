@@ -256,6 +256,8 @@ class SocialLinkPlugin extends Plugin {
             $errors = array();
             $ticket = Ticket::create($ticket_entry, $errors, $ticket_entry["source"]);
 
+            error_log(gettype($ticket));
+
             $msg = array(
                 "ticket_id"=>$ticket->getId(),
                 "chat_id"=>"1",
