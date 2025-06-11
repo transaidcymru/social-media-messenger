@@ -108,7 +108,7 @@ class SocialLinkPlugin extends Plugin {
             $tickets_view = false;
         }
 
-        if (self::DEBUG) {
+        if (true) {
             error_log("Matched $url as ".($tickets_view ? 'ticket' : 'not ticket'));
         }
 
