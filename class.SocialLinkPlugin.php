@@ -121,6 +121,10 @@ class SocialLinkPlugin extends Plugin {
         $dom = $plugin->getDom($html);
 
         // edit
+        $ticket_id = $_SERVER['id'];
+        $script = $dom->createElement("script");
+        $script->textContent = 
+            "alert(\"Kate and Trin were at this location. Also $ticket_id\");";
 
         $new_html = $plugin->printDom($dom);
         print $new_html;
