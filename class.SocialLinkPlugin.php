@@ -75,7 +75,13 @@ class SocialLinkPlugin extends Plugin {
 
     public static function shutdownHandler(self $plugin)
     {
-        print "kate and trin waz here";
+        $html = ob_get_clean();
+        $dom = $plugin->getDom($html);
+
+        // edit
+
+        $new_html = $plugin->printDom($dom);
+        print $new_html;
     } 
     
 
@@ -231,5 +237,105 @@ class SocialLinkPlugin extends Plugin {
         }
         parent::uninstall($errors);
     }
+    public function getDom($html = ''): DOMDocument
+        {
+            $dom = new \DOMDocument('1.0', 'UTF-8');
+            $dom->validateOnParse = true;
+            $dom->resolveExternals = true;
+            $dom->preserveWhiteSpace = false;
+            // Turn off XML errors.. if only it was that easy right?
+            $dom->strictErrorChecking = false;
+            $xml_error_setting = libxml_use_internal_errors(true);
+
+            // Because PJax isn't a full document, it kinda breaks DOMDocument
+            // Which expects a full document! (You know with a DOCTYPE, <HTML> <BODY> etc.. )
+            if (self::isPjax() &&
+              (!str_starts_with($html, '<!DOCTYPE') || !str_starts_with($html, '<html'))) {
+                // Prefix the non-doctyped html snippet with an xml prefix
+                // This tricks DOMDocument into loading the HTML snippet
+                $xml_prefix = '<?xml encoding="UTF-8" />';
+                $html = $xml_prefix.$html;
+            }
+
+            // Convert the HTML into a DOMDocument, however, don't imply it's HTML, and don't insert a default Document Type Template
+            // Note, we can't use the Options parameter until PHP 5.4 http://php.net/manual/en/domdocument.loadhtml.php
+            if (!($loaded = $dom->loadHTML($html))) {
+                $this->debug_log("There was a problem loading the DOM.");
+            } else {
+                $this->debug_log("%d chars of HTML was inserted into a DOM", strlen($html));
+            }
+            libxml_use_internal_errors($xml_error_setting); // restore xml parser error handlers
+            $this->debug_log('DOM Loaded.');
+            return $dom;
+        }
+
+        /**
+         * Gets the DOM back as HTML
+         *
+         * @param  DOMDocument  $dom
+         *
+         * @return bool|string
+         */
+        public function printDom(DOMDocument $dom): bool|string
+        {
+            $this->debug_log("Converting the DOM back to HTML");
+            // Check for failure to generate HTML
+            // DOMDocument::saveHTML() returns null on error
+            $new_html = $dom->saveHTML();
+
+            // Remove the DOMDocument make-happy encoding prefix:
+            if (self::isPjax()) {
+                $remove_prefix_pattern = '@<\?xml encoding="UTF-8" />@';
+                $new_html = preg_replace($remove_prefix_pattern, '', $new_html);
+            }
+            return $new_html;
+        }
+        private function debug_log($text, $_ = null): void
+        {
+            if (true) {
+                $args = func_get_args();
+                $text = array_shift($args);
+                $this->log($text, $args); // send variable amount of args as array
+            }
+        }
+         private function log(string $text, $_ = null): void
+         {
+            // Log to system, if available
+            global $ost;
+
+            $args = func_get_args();
+            $format = array_shift($args);
+            if (!$format) {
+                return;
+            }
+            if (is_array($args[0])) {
+                // handle debug_log's version or array of variables passed
+                $text = vsprintf($format, $args[0]);
+            } elseif (count($args)) {
+                // handle normal variables as arguments
+                $text = vsprintf($format, $args);
+            } else {
+                // no variables passed
+                $text = $format;
+            }
+
+            if (!$ost instanceof osTicket) {
+                // doh, can't log to the admin log without this object
+                // setup a callback to do the logging afterwards:
+                // save the log message in memory for now
+                // the callback registered above will retrieve it and log it
+                $this->messages[] = $text;
+                error_log("DEBUG: Failed as ost is not an osTicket instance..: ".$text);
+                return;
+            }
+
+            error_log("AttachmentPreviewPlugin: $text");
+            $ost->logInfo(wordwrap($text, 30), $text, false);
+        }
+
+        public static function isPjax(): bool
+        {
+            return (isset($_SERVER['HTTP_X_PJAX']) && $_SERVER['HTTP_X_PJAX'] == 'true');
+        }
 }
 ?>
