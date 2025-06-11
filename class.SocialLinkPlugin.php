@@ -122,9 +122,30 @@ class SocialLinkPlugin extends Plugin {
 
         // edit
         $ticket_id = $_GET['id'];
+
+        $is_social_query = db_query(
+            "SELECT * from ".TICKET_TABLE." WHERE ticket_id=" . strval($ticket_id) . ";");
+
+        if(false === $is_social_query)
+        {
+            error_log(self::PLUGIN_NAME . ": Database query failure.");
+            print $html;
+            return;
+        }
+
+        $is_social = $is_social_query->num_rows === 1;
+
+        if (!$is_social)
+        {
+            print $html;
+            return;
+        }
+
         $script = $dom->createElement("script");
         $script->textContent = 
             "alert(\"Kate and Trin were at this location. Also $ticket_id \");";
+
+
         $dom->appendChild($script);
 
         $new_html = $plugin->printDom($dom);
