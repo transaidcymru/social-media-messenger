@@ -60,17 +60,59 @@ class SocialLinkPlugin extends Plugin {
                     return;
                 }
             }
-            register_shutdown_function(
-                function () {
-                    static::shutdownHandler($this);
-                }
-            );
+            
+            if (self::isTicketsView())
+            {
+                ob_start();
+                register_shutdown_function(
+                    function () {
+                        static::shutdownHandler($this);
+                    }
+                );
+            }
 
         }
         catch(Exception $e) {
             error_log("shit");
         }
 
+    }
+
+    public static function isTicketsView(): bool
+    {
+        $tickets_view = false;
+        $url = $_SERVER['REQUEST_URI'];
+
+        // Run through the most likely candidates first:
+        // Ignore POST data, unless we're seeing a new ticket, then don't ignore.
+        if (isset($_POST['a']) && $_POST['a'] == 'open') {
+            $tickets_view = true;
+        } elseif (!str_contains($url, '/scp/')) {
+            // URL doesn't include /scp/ so isn't an agent page
+            $tickets_view = false;
+        } elseif (isset($_POST) && count($_POST)) {
+            // If something has been POST'd to osTicket, assume we're not Viewing a ticket
+            $tickets_view = false;
+        } elseif (strpos($url, 'a=edit') || strpos($url, 'a=print')) {
+            // URL contains a=edit or a=print, so assume we aren't needed here!
+            $tickets_view = false;
+        } elseif
+            // URL contains a ticket ID and page is index.php or tickets.php, we are viewing a ticket
+        (str_contains($url, 'id=') &&
+          (str_contains($url, 'index.php') ||
+            str_contains($url, 'tasks.php') || // Thanks to leandrovergara in pr#40 :)
+            str_contains($url, 'tickets.php'))) {
+            $tickets_view = true;
+        } else {
+            // Default
+            $tickets_view = false;
+        }
+
+        if (self::DEBUG) {
+            error_log("Matched $url as ".($tickets_view ? 'ticket' : 'not ticket'));
+        }
+
+        return $tickets_view;
     }
 
     public static function shutdownHandler(self $plugin)
