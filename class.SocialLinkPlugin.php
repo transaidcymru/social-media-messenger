@@ -60,6 +60,11 @@ class SocialLinkPlugin extends Plugin {
                     return;
                 }
             }
+            register_shutdown_function(
+                function () {
+                    static::shutdownHandler($this);
+                }
+            );
 
         }
         catch(Exception $e) {
@@ -67,6 +72,11 @@ class SocialLinkPlugin extends Plugin {
         }
 
     }
+
+    public static function shutdownHandler(self $plugin)
+    {
+        print "kate and trin waz here";
+    } 
     
 
     public function onThreadUpdate($entry, $data) {
@@ -204,6 +214,7 @@ class SocialLinkPlugin extends Plugin {
     }
 
     function pre_uninstall(&$errors) {
+        // Note: THIS NEVER RUNS!!!!!
         $errors = array();
         global $ost;
         // Send an alert to the system admin:
