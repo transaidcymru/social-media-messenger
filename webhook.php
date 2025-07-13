@@ -10,7 +10,7 @@ $body = json_decode(file_get_contents("php://input"));
 
 echo "hello world!!";
 
-$hub_verify_token = $body["hub"]["verify_token"];
+$hub_verify_token = $body->hub->verify_token;
 
 echo $hub_verify_token;
 echo $verify_token;
