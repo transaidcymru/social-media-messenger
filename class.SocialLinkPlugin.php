@@ -259,7 +259,7 @@ class SocialLinkPlugin extends Plugin
         ($object); // object is never used. - should always be null.
 
         // process webhook.
-        error_log(print_r($data));
+        error_log(print_r($data, true));
     }
 
 
