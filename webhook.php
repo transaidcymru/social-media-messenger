@@ -6,6 +6,9 @@ require_once 'class.SocialLinkPlugin.php';
 $config = SocialLinkPlugin::getConfigStatic();
 $verify_token = $config->get("instagram-verify-token");
 
+$body = json_decode(file_get_contents("php://input"));
+
+echo print_r($body);
 
 echo "hello world!!";
 
