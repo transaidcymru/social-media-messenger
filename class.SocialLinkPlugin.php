@@ -16,6 +16,7 @@ foreach ([
 
 require_once 'config.php';
 require_once 'mysqli.php';
+require_once 'SocialLinkDB.php';
 
 class SocialLinkPlugin extends Plugin
 {
@@ -30,33 +31,24 @@ class SocialLinkPlugin extends Plugin
         "Instagram"
     );
 
+    function isMultiInstance()
+    {
+        return false;
+    }
+
     // -- Main Procedure -------------------------------------------------------
     public function bootstrap()
     {
-        Signal::connect('threadentry.created', array($this, 'sync'));
-        Signal::connect('cron', array($this, 'sync'));
-        Signal::connect('smm.instagram-webhook', array($this, 'instgramWebhook'));
         try {
-            $test_query = db_query("SHOW tables LIKE '".self::TABLE_NAME."';");
+            Signal::connect('threadentry.created', array($this, 'sync'));
+            Signal::connect('cron', array($this, 'sync'));
+            Signal::connect('smm.instagram-webhook', array($this, 'instgramWebhook'));
 
-            if (false === $test_query) {
-                $this->debug_log("Error querying database");
-                return;
-            }
-            if (true === $test_query) {
-                $this->debug_log("unexpected query result");
-                return;
-            }
+            $error = null;
+            SocialLinkDB\initTable($error);
+            if ($error !== null)
+                $this->debug_log("Database initialisation failed: $error");
 
-            if (!($test_query->num_rows > 0)) {
-                $sql = file_get_contents(__DIR__.'install.sql');
-                $create_table_query = db_query($sql);
-
-                if (!$create_table_query) {
-                    $this->debug_log("error creating table in database");
-                    return;
-                }
-            }
 
             if (self::isTicketsView()) {
                 ob_start();
@@ -78,22 +70,15 @@ class SocialLinkPlugin extends Plugin
         $html = ob_get_clean();
         $dom = $plugin->getDom($html);
 
-        // edit
         $ticket_id = $_GET['id'];
+        $error = null;
 
-        $is_social_query = db_query(
-            "SELECT * from ".TICKET_TABLE." WHERE ticket_id=" . strval($ticket_id) . ";"
-        );
+        $is_social_link = SocialLinkDB\isSocialLinkTicket($ticket_id, $error);
+        if ($error !== null)
+            error_log(self::PLUGIN_NAME.": database query failure: $error");
 
-        if (false === $is_social_query) {
-            error_log(self::PLUGIN_NAME . ": Database query failure.");
-            print $html;
-            return;
-        }
-
-        $is_social = $is_social_query->num_rows === 1;
-
-        if (!$is_social) {
+        if (!$is_social_link)
+        {
             print $html;
             return;
         }
@@ -109,6 +94,7 @@ class SocialLinkPlugin extends Plugin
         print $new_html;
     }
 
+    // Pushes osTicket updates to social media platforms.
     public function onThreadUpdate($entry, $data)
     {
         // Get associated ticket
@@ -120,6 +106,7 @@ class SocialLinkPlugin extends Plugin
             return;
         }
 
+        // TODO: i think this is unnecessary - should be able to get source_extra from the ticket object.
         $source_extra_query = db_query(
             "SELECT source_extra from ".TICKET_TABLE." WHERE ticket_id=" . strval($ticket_id) . ";"
         );
@@ -163,6 +150,7 @@ class SocialLinkPlugin extends Plugin
         error_log(self::PLUGIN_NAME . ": ARRAY!!! " . json_encode($session_table_row));
     }
 
+    // Pushes new social media messages to osTicket - either creating or updating threads.
     public function sync($object, $data)
     {
         // pull messages from social media and sync
