@@ -10,7 +10,7 @@ class SocialLinkPluginConfig extends PluginConfig {
                 'label' => 'Instagram API Key',
                 'hint' => 'API key for instagram API.',
             ]),
-            'instagram-webhook-secret' => new TextboxField([
+            'instagram-verify-token' => new TextboxField([
                 'default' => '',
                 'label' => 'Instagram API Webhook Key',
                 'hint' => 'Webhook secret set in admin settings to verify webhook requests.',

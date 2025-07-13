@@ -30,6 +30,22 @@ class SocialLinkPlugin extends Plugin
         "Facebook",
         "Instagram"
     );
+    private static $config_static = null;
+
+
+    // Static version of 'getConfig' - allows access to plugin config
+    // when $this isn't available (i.e. in endpoint.). Plugin isn't 
+    // allowed multiple instances so this shouldn't cause problems.
+    static function getConfigStatic($error=null)
+    {
+        if (self::$config_static === null)
+        {
+            $error = "configuration not yet initialised: plugin not instanced.";
+            return;
+        }
+        return self::$config_static;
+
+    }
 
     function isMultiInstance()
     {
@@ -40,6 +56,8 @@ class SocialLinkPlugin extends Plugin
     public function bootstrap()
     {
         try {
+            self::$config_static = $this->getConfig();
+
             Signal::connect('threadentry.created', array($this, 'sync'));
             Signal::connect('cron', array($this, 'sync'));
             Signal::connect('smm.instagram-webhook', array($this, 'instgramWebhook'));
@@ -47,7 +65,10 @@ class SocialLinkPlugin extends Plugin
             $error = null;
             SocialLinkDB\initTable($error);
             if ($error !== null)
+            {
                 $this->debug_log("Database initialisation failed: $error");
+                return;
+            }
 
 
             if (self::isTicketsView()) {
@@ -75,7 +96,10 @@ class SocialLinkPlugin extends Plugin
 
         $is_social_link = SocialLinkDB\isSocialLinkTicket($ticket_id, $error);
         if ($error !== null)
+        {
             error_log(self::PLUGIN_NAME.": database query failure: $error");
+            return;
+        }
 
         if (!$is_social_link)
         {
@@ -235,6 +259,7 @@ class SocialLinkPlugin extends Plugin
         ($object); // object is never used. - should always be null.
 
         // process webhook.
+        error_log(print_r($data));
     }
 
 
