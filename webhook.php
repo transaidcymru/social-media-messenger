@@ -12,6 +12,8 @@ $hub_verify_token = $body->hub->verify_token;
 $hub_challenge = $body->hub->challenge;
 $hub_mode = $body->hub->mode;
 
+$result = strcmp($hub_verify_token, $verify_token);
+
 if ($result === 0)
 {
     $data = [
