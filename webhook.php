@@ -1,5 +1,5 @@
 <?php
-//require_once '../../../api/api.inc.php';
+require_once '../../../api/api.inc.php';
 //require_once INCLUDE_DIR.'class.signal.php';
 //require_once 'class.SocialLinkPlugin.php';
 //
