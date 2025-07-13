@@ -36,7 +36,7 @@ class SocialLinkPlugin extends Plugin
     // Static version of 'getConfig' - allows access to plugin config
     // when $this isn't available (i.e. in endpoint.). Plugin isn't 
     // allowed multiple instances so this shouldn't cause problems.
-    static function getConfigStatic($error=null)
+    static function getConfigStatic(&$error=null)
     {
         if (self::$config_static === null)
         {

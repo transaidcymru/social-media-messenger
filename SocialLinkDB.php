@@ -3,7 +3,7 @@ namespace SocialLinkDB;
 
 require_once 'mysqli.php';
 
-const TABLE_NAME = "tac_socialSession";
+const TABLE_NAME = "tac_socialSessions";
 
 // Query that can return a result.
 function selectionQuery(string $query, &$error = null)
@@ -37,7 +37,9 @@ function initTable(&$error = null)
     if (!($q->num_rows > 0))
     {
         // table doesn't exist, create...
-        $sql = file_get_contents(__DIR__.'install.sql');
+        
+        // TODO: might not work.
+        $sql = file_get_contents(__DIR__.'/install.sql');
         $create_table_q = db_query($sql);
 
         if(!$create_table_q)

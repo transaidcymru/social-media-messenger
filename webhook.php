@@ -17,7 +17,7 @@ if ($verify_token === $hub_verify_token)
             "hub_challenge" => $hub_challenge,
             "hub_verify_token" => $hub_verify_token
         ]);
-        echo $hub_challenge;
+    echo $hub_challenge;
 }
 else
     echo "invalid verify token";
