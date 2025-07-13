@@ -60,7 +60,7 @@ class SocialLinkPlugin extends Plugin
 
             Signal::connect('threadentry.created', array($this, 'sync'));
             Signal::connect('cron', array($this, 'sync'));
-            Signal::connect('smm.instagram-webhook', array($this, 'instgramWebhook'));
+            Signal::connect('smm.instagram-webhook', array($this, 'instagramWebhook'));
 
             $error = null;
             SocialLinkDB\initTable($error);
