@@ -8,16 +8,10 @@ $verify_token = $config->get("instagram-verify-token");
 
 $body = json_decode(file_get_contents("php://input"));
 
-echo print_r($body);
-
 echo "hello world!!";
 
-$hub_mode = $_GET["hub.mode"];
-$hub_challenge = $_GET["hub.challenge"];
-$hub_verify_token = $_GET["hub.verify_token"];
+$hub_verify_token = $body["hub"]["verify_token"];
 
-echo $hub_mode;
-echo $hub_challenge;
 echo $hub_verify_token;
 echo $verify_token;
 
@@ -31,7 +25,7 @@ if ($result === 0)
             "hub_challenge" => $hub_challenge,
             "hub_verify_token" => $hub_verify_token
         ]);
-    echo $hub_challenge;
+    //echo $hub_challenge;
 }
 else
     echo "invalid verify token";
