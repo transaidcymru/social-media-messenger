@@ -7,6 +7,7 @@ $config = SocialLinkPlugin::getConfigStatic();
 $verify_token = $config->get("instagram-verify-token");
 
 $body = json_decode(file_get_contents("php://input"));
+error_log(print_r($body, true));
 
 //$hub_verify_token = $body->hub->verify_token;
 //$hub_challenge = $body->hub->challenge;
