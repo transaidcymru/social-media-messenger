@@ -22,9 +22,6 @@ class SocialLinkPlugin extends Plugin
     // -- Definitions ----------------------------------------------------------
     public $config_class = 'SocialLinkPluginConfig';
 
-    public $dummy_api;
-    public $dummy;
-
     public const PLUGIN_NAME = "Social Link Plugin";
     public const TABLE_NAME = "tac_socialSessions";
     public const SOURCES = array(
@@ -38,6 +35,7 @@ class SocialLinkPlugin extends Plugin
     {
         Signal::connect('threadentry.created', array($this, 'sync'));
         Signal::connect('cron', array($this, 'sync'));
+        Signal::connect('smm.instagram-webhook', array($this, 'instgramWebhook'));
         try {
             $test_query = db_query("SHOW tables LIKE '".self::TABLE_NAME."';");
 
@@ -172,7 +170,7 @@ class SocialLinkPlugin extends Plugin
         global $ost;
 
         // Incoming dummy message
-        $incoming = $this->fetch_messages();
+        $incoming = $this->fetchMessages();
 
         if (!$incoming) {
             return;
@@ -232,7 +230,7 @@ class SocialLinkPlugin extends Plugin
 
     }
 
-    public function fetch_messages()
+    public function fetchMessages()
     {
         $query = db_query("SELECT * from tac_socialSessions;");
 
@@ -242,6 +240,13 @@ class SocialLinkPlugin extends Plugin
             return array("chat_id" => "1", "platform" => "Facebook", "start" => "1970-01-01 00:00:01", "end" => "1970-01-01 00:00:05");
         }
         return null;
+    }
+
+    public function instagramWebhook($object, $data)
+    {
+        ($object); // object is never used. - should always be null.
+
+        // process webhook.
     }
 
 

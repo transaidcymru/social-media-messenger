@@ -5,12 +5,15 @@ require_once INCLUDE_DIR . 'class.message.php';
 class SocialLinkPluginConfig extends PluginConfig {
     function getOptions() {
         return [
-            'purge-age' => new TextboxField([
-                'default' => '999',
-                'label' => 'boop',
-                'hint' => 'boop',
-                'size' => 5,
-                'length' => 4
+            'instagram-api-key' => new TextboxField([
+                'default' => '',
+                'label' => 'Instagram API Key',
+                'hint' => 'API key for instagram API.',
+            ]),
+            'instagram-webhook-secret' => new TextboxField([
+                'default' => '',
+                'label' => 'Instagram API Webhook Key',
+                'hint' => 'Webhook secret set in admin settings to verify webhook requests.',
             ]),
         ];
     }
