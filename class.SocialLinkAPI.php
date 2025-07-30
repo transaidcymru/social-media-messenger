@@ -3,13 +3,12 @@
 // Base class for social media API implementations (e.g. Facebook, BlueSky etc.).
 class SocialLinkAPI {
 
-    function __construct(){
-
+    public function getConversations(&$error=null): array {
+        return array();
     }
 
-    // TODO: Dummy implementation
-    public function getMaxFetch() {
-        return 0;
+    public function sendMessage(string $conversation_id, string $message_content, &$error=null) {
+        
     }
 }
 
