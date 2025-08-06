@@ -10,12 +10,16 @@ class InstagramAPI extends SocialLinkAPI {
     private array $headers;
 
     function __construct(string $api_key) {
-        $this->api_key = $api_key;
-        $this->headers = [
-            "Authorization: Bearer $this->api_key",
-            "Content-Type: application/json"
-        ];
-        $this->my_id = $this->getOwnID();
+        try {
+            $this->api_key = $api_key;
+            $this->headers = [
+                "Authorization: Bearer $this->api_key",
+                "Content-Type: application/json"
+            ];
+            $this->my_id = $this->getOwnID();
+        } catch(Exception $e) {
+            error_log("shopp");
+        }
         
     }
 
