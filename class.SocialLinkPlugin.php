@@ -82,8 +82,7 @@ class SocialLinkPlugin extends Plugin
             }
             $api_key = $this->getConfig()->get("instagram-api-key");
 
-            //if($api_key !== '')
-            if(false)
+            if($api_key !== '')
             {
                 $api = new InstagramAPI($api_key);
 
