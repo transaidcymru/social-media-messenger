@@ -80,16 +80,20 @@ class SocialLinkPlugin extends Plugin
                     }
                 );
             }
-            $api = new InstagramAPI($this->getConfig()->get("instagram-api-key"));
-
-            $conversations = $api->getConversations();
-            foreach ($conversations as $conversation)
+            $api_key = $this->getConfig()->get("instagram-api-key");
+            if($api_key !== "")
             {
-                error_log(print_r($conversation, true));
-                $messages = $api->getMessages($conversation, 0);
-                foreach($messages as $message)                
+                $api = new InstagramAPI($api_key);
+
+                $conversations = $api->getConversations();
+                foreach ($conversations as $conversation)
                 {
-                    error_log(print_r($message, true));
+                    error_log(print_r($conversation, true));
+                    $messages = $api->getMessages($conversation, 0);
+                    foreach($messages as $message)                
+                    {
+                        error_log(print_r($message, true));
+                    }
                 }
             }
 
