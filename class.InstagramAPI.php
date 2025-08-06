@@ -28,7 +28,7 @@ class InstagramAPI extends SocialLinkAPI {
             self::BASE_URL."/me",
             $this->headers,
             array("fields" => "id")));
-        return $me_request->data[0]->id;
+        return $me_request->id;
     }
 
     public function getConversations(&$error=null): array {
