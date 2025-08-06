@@ -17,6 +17,7 @@ foreach ([
 require_once 'config.php';
 require_once 'mysqli.php';
 require_once 'SocialLinkDB.php';
+require_once 'class.InstagramAPI.php';
 
 class SocialLinkPlugin extends Plugin
 {
@@ -79,9 +80,21 @@ class SocialLinkPlugin extends Plugin
                     }
                 );
             }
+            $api = new InstagramAPI($this->getConfig()->get("instagram-api-key"));
+
+            $conversations = $api->getConversations();
+            foreach ($conversations as $conversation)
+            {
+                error_log(print_r($conversation, true));
+                $messages = $api->getMessages($conversation, 0);
+                foreach($messages as $message)                
+                {
+                    error_log(print_r($message, true));
+                }
+            }
 
         } catch (Exception $e) {
-            error_log("shit");
+            error_log($e->getMessage());
         }
 
     }

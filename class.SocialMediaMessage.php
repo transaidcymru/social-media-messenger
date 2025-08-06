@@ -1,15 +1,14 @@
 <?php
 class SocialMediaMessage {
     public string $content;
-    public string $message_id;
-    public int $timestamp;
+    public string $id;
+    public int $time;
 
-    function __construct(string $message_id, int $timestamp, string $content)
+    function __construct(string $id, int $time, string $content)
     {
-        $this->message_id = $message_id;
-        $this->timestamp = $timestamp;
+        $this->id = $id;
+        $this->time = $time;
         $this->content = $content;
-        
     }
 }
 ?>
