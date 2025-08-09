@@ -32,82 +32,69 @@ class InstagramAPI extends SocialLinkAPI {
     }
 
     public function getConversations(&$error=null): array {
+        $conversations_req = json_decode($this->get_request(
+            self::BASE_URL."/me/conversations",
+            $this->headers,
+            array("fields" => "participants,updated_time")
+            ));
 
-        try {
-            $conversations_req = json_decode($this->get_request(
-                self::BASE_URL."/me/conversations",
-                $this->headers,
-                array("fields" => "messages")));
+        $ret = array();
+        foreach ($conversations_req->data as $conversation)
+        {
+            // if it's 1, you're talking to yourself.
+            // if it's >2 you're in a group chat. we should think about what to do then.
+            if (sizeof($conversation->participants->data) !== 2)
+                continue;               
 
-            
-            $ret = array();
-            foreach ($conversations_req->data as $conversation)
-            {
-                array_push(
-                    $ret,
-                    new SocialMediaConversation(
-                        $conversation->id,
-                        strtotime($conversation->update_time)));
-            }
-
-            return $ret;
-        } catch (Exception $e) {
-            error_log($e->getMessage());
+            array_push(
+                $ret,
+                new SocialMediaConversation(
+                    $conversation->id,
+                    $conversation->participants->data[1]->id,
+                    $conversation->participants->data[1]->username,
+                    strtotime($conversation->updated_time)));
         }
-        return array();
+
+        return $ret;
     }
     public function getMessages(string $conversation_id, int $since) {
-        try {
-            $message_ids = array();
-            $more_messages = true;
-            $endpoint = self::BASE_URL."/".$conversation_id;
-            while ($more_messages)
-            {
-                $conversation_req = json_decode($this->get_request(
-                    $endpoint,
-                    $this->headers,
-                    array("fields" => "messages")
-                ));
+        $message_ids = array();
+        $conversation_req = json_decode($this->get_request(
+            self::BASE_URL."/".$conversation_id,
+            $this->headers,
+            array("fields" => "messages", "limit" => "20")
+        ));
 
-                foreach ($conversation_req->messages->data as $message)
-                {
-                    $time = strtotime($message->created_time);
-                    $id = $message->id;
+        foreach ($conversation_req->messages->data as $message)
+        {
+            $time = strtotime($message->created_time);
+            $id = $message->id;
 
-                    if ($time > $since)
-                    {
-                        $more_messages = false;
-                        break;
-                    }
+            if ($time < $since)
+                break;
 
-                    array_push($message_ids, $id);
-                }
-                $endpoint = $conversation_req->messages->paging->next;
-            }
-
-            $ret = array();
-            foreach($message_ids as $id)
-            {
-                $message_req = json_decode($this->get_request(
-                    self::BASE_URL."/".$id,
-                    $this->headers,
-                    array("fields" => "created_time,from,message")
-                ));
-
-                if ($message_req->from->id !== $this->my_id)
-                {
-                    array_push($ret, new SocialMediaMessage(
-                        $id,
-                        $message_req->created_time,
-                        $message->message
-                    ));
-                }
-            }
-            return $ret;
-        } catch (Exception $e) {
-            error_log($e->getMessage());
+            array_push($message_ids, $id);
         }
-        return array();
+
+        $ret = array();
+        foreach($message_ids as $id)
+        {
+            $message_req = json_decode($this->get_request(
+                self::BASE_URL."/".$id,
+                $this->headers,
+                array("fields" => "created_time,from,message")
+            ));
+
+            if ($message_req->from->id !== $this->my_id)
+            {
+                array_push($ret, new SocialMediaMessage(
+                    $id,
+                    strtotime($message_req->created_time),
+                    $message_req->message
+                ));
+            }
+        }
+        return $ret;
     }
 
     public function sendMessage(string $conversation_id, string $message_content, &$error=null) {
