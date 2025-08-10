@@ -43,7 +43,7 @@ class InstagramAPI extends SocialLinkAPI {
         {
             // if it's 1, you're talking to yourself.
             // if it's >2 you're in a group chat. we should think about what to do then.
-            if (sizeof($conversation->participants->data) !== 2)
+            if (count($conversation->participants->data) !== 2)
                 continue;               
 
             array_push(
@@ -76,6 +76,8 @@ class InstagramAPI extends SocialLinkAPI {
             array_push($message_ids, $id);
         }
 
+        // TODO: parallelize
+        // https://danielrotter.at/2025/04/12/batch-curl-requests-in-php-using-multi-handles.html
         $ret = array();
         foreach($message_ids as $id)
         {
