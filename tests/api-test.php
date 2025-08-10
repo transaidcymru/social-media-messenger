@@ -42,11 +42,22 @@ db_connect();
 SocialLinkDB\initTable();
 print_r(SocialLinkDB\selectionQuery("SELECT * FROM tac_socialSessions")->fetch_all(MYSQLI_ASSOC));
 
+$zero_hour = 1754844855;
+
 $api = new InstagramAPI(getenv("API_KEY"));
 
 $conversations = $api->getConversations();
 foreach ($conversations as $conversation)
 {
+    // reject the session if update time is before the 'zero hour'.
+    // this avoids the issue where upon going live a new ticket is
+    // made for EVERY SINGLE DIRECT MESSAGE WE HAVE EVER RECIEVED
+    if($conversation->updated_time < $zero_hour)
+    {
+        print_r("rejecting message - updated time is before zero hour\n");
+        continue;
+    }
+
     $associated_sessions = SocialLinkDB\socialSessionsFromChatID($conversation->id);
 
     $most_recent_session = null;
@@ -70,7 +81,7 @@ foreach ($conversations as $conversation)
 
     // if we get this far we have tickets to update/create.
 
-    $update_since = $new_session ? 0 : $most_recent_session->timestamp_end;
+    $update_since = $new_session ? $zero_hour : $most_recent_session->timestamp_end;
     $messages = $api->getMessages($conversation->id, $update_since);
 
     if($new_session)
