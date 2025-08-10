@@ -177,8 +177,13 @@ class SocialLinkPlugin extends Plugin
 
     private function addMessagesToTicket(Ticket $ticket, array $messages)
     {
-        // TODO 
-        //$ticket->postMessage();
+        $string = join(array_map(fn ($m) => $m->encode(),$messages));
+        // TODO: as far as i can tell this is sufficient for a successful post. will find out.
+        $ticket->postMessage(
+            array(
+                "message" => $string
+            )
+        );
     }
 
     private function newSession(

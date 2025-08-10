@@ -10,5 +10,10 @@ class SocialMediaMessage {
         $this->time = $time;
         $this->content = $content;
     }
+
+    public function encode()
+    {
+        return "__SOCIAL_MSG $this->time $this->content\n";
+    }
 }
 ?>
