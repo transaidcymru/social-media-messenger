@@ -80,23 +80,6 @@ class SocialLinkPlugin extends Plugin
                     }
                 );
             }
-            $api_key = $this->getConfig()->get("instagram-api-key");
-
-            if($api_key !== '')
-            {
-                $api = new InstagramAPI($api_key);
-
-                $conversations = $api->getConversations();
-                foreach ($conversations as $conversation)
-                {
-                    error_log(print_r($conversation, true));
-                    $messages = $api->getMessages($conversation, 0);
-                    foreach($messages as $message)                
-                    {
-                        error_log(print_r($message, true));
-                    }
-                }
-            }
 
         } catch (Exception $e) {
             error_log($e->getMessage());
@@ -192,6 +175,49 @@ class SocialLinkPlugin extends Plugin
         error_log(self::PLUGIN_NAME . ": ARRAY!!! " . json_encode($session_table_row));
     }
 
+    private function addMessagesToTicket(Ticket $ticket, array $messages)
+    {
+        // TODO 
+        //$ticket->postMessage();
+    }
+
+    private function newSession(
+        SocialMediaConversation $conversation,
+        array $messages,
+        SocialLinkDB\Platform $platform)
+    {
+        $ticket_entry = array(
+                        "source" => "API",
+                        "source_extra" => $platform->name,
+                        "email" => "void@transaid.cymru",
+                        "name" => $conversation->username);
+        $errors = array();
+        $ticket = Ticket::create($ticket_entry, $errors, $ticket_entry["source"]);
+
+        $this->addMessagesToTicket($ticket, $messages);
+
+        SocialLinkDB\insertSocialSession(new SocialLinkDB\SocialSession(
+            $ticket->getId(),
+            $conversation->id,
+            $platform,
+            $messages[count($messages) - 1]->time,
+            $messages[0]->time
+        ));
+    }
+
+    private function updateSession(
+        SocialLinkDB\SocialSession $most_recent_session,
+        SocialMediaConversation $conversation,
+        array $messages)
+    {
+        $ticket = Ticket::lookup($most_recent_session->ticket_id);
+        //get lock and release lock?
+        // TODO: post messages
+        $this->addMessagesToTicket($ticket, $messages);
+        
+        SocialLinkDB\updateEndTime($most_recent_session, $messages[0]->time);
+    }
+
     // Pushes new social media messages to osTicket - either creating or updating threads.
     public function sync($object, $data)
     {
@@ -199,77 +225,56 @@ class SocialLinkPlugin extends Plugin
         error_log("fetching");
         global $ost;
 
-        // Incoming dummy message
-        $incoming = $this->fetchMessages();
+        // TODO: do this for each platform.
+        
+        $api = new InstagramAPI($this->getConfig()["instagram-api-key"]);
+        $zero_hour = $this->getConfig()["zero-hour"];
 
-        if (!$incoming) {
-            return;
-        }
-
-        // Seach DB for matching chat id sessions
-        $sessions = db_query("SELECT * from tac_socialSessions WHERE chat_id='" . $incoming["chat_id"] . "';");
-
-        // Error checking
-        $ticket = null;
-        $session = null;
-        if (false === $sessions) {
-            $this->log("Error querying database");
-        } elseif (true === $sessions) {
-            $this->log("unexpected query result");
-        } elseif (!($sessions->num_rows > 0)) {
-            // Check existing sessions for open ticket
-            $bestMatch = null;
-            while ($found = $sessions->fetch_assoc()) {
-                $ticket = Ticket::lookup($found["ticket_id"]);
-                if ($ticket
-                    && $ticket->isOpen()
-                    && (!$bestMatch || $ticket->getCreateDate() > $bestMatch->getCreateDate())) {
-                    $session = $found;
-                    $bestMatch = $ticket;
-                }
+        $conversations = $api->getConversations();
+        foreach ($conversations as $conversation)
+        {
+            // reject the session if update time is before the 'zero hour'.
+            // this avoids the issue where upon going live a new ticket is
+            // made for EVERY SINGLE DIRECT MESSAGE WE HAVE EVER RECIEVED
+            if($conversation->updated_time < $zero_hour)
+            {
+                print_r("rejecting message - updated time is before zero hour\n");
+                continue;
             }
+
+            $associated_sessions = SocialLinkDB\socialSessionsFromChatID($conversation->id);
+
+            $most_recent_session = null;
+            foreach ($associated_sessions as $session)
+            {
+                if ($most_recent_session === null)
+                    $most_recent_session = $session;
+                else if ($session->timestamp_end > $most_recent_session->timestamp_end)
+                    $most_recent_session = $session;
+            }
+
+            // this will short circuit. no type worries.
+            $new_session = $most_recent_session === null
+                || !Ticket::lookup($most_recent_session->ticket_id)->isOpen();
+
+            // more short circuiting. This triggers if we found the session but it's up to date.
+            if (!$new_session && $conversation->updated_time <= $most_recent_session->timestamp_end)
+            {
+                print_r("Nothing to do!! continuing on\n");
+                continue;
+            }
+
+            // if we get this far we have tickets to update/create.
+
+            $update_since = $new_session ? $zero_hour : $most_recent_session->timestamp_end;
+            $messages = $api->getMessages($conversation->id, $update_since);
+
+            if($new_session)
+                $this->newSession($conversation, $messages, SocialLinkDB\Platform::Instagram);
+            else
+                $this->updateSession($most_recent_session, $conversation, $messages);
         }
-        if (!$session) {
-            // TODO: Email is REQUIRED to avoid errors; let's use a dummy email
-            $ticket_entry = array(
-                "source" => "API",
-                "source_extra" => $incoming["platform"],
-                "email" => "void@transaid.cymru",
-                "name" => "void");
 
-            // TODO: Manually set source_extra in DB if need be
-            $errors = array();
-            $ticket = Ticket::create($ticket_entry, $errors, $ticket_entry["source"]);
-
-            error_log(print_r($errors, true));
-
-            $msg = array(
-                "ticket_id" => $ticket->getId(),
-                "chat_id" => "1",
-                "platform" => "Facebook",
-                "timestamp_start" => "1970-01-01 00:00:01",
-                "timestamp_end" => "1970-01-01 00:00:05"
-            );
-
-            db_query(
-                "INSERT INTO tac_socialSessions (ticket_id, chat_id, platform, timestamp_start, timestamp_end)
-    VALUES (".$msg["ticket_id"].", ".$msg["chat_id"].", '".$msg["platform"]."', '".$msg["timestamp_start"]."', '".$msg["timestamp_end"]."');"
-            );
-
-        }
-
-    }
-
-    public function fetchMessages()
-    {
-        $query = db_query("SELECT * from tac_socialSessions;");
-
-        if (false === $query) {
-            error_log("malformed query");
-        } elseif ($query->num_rows === 0) {
-            return array("chat_id" => "1", "platform" => "Facebook", "start" => "1970-01-01 00:00:01", "end" => "1970-01-01 00:00:05");
-        }
-        return null;
     }
 
     public function instagramWebhook($object, $data)
