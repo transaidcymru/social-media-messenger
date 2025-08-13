@@ -199,6 +199,7 @@ class SocialLinkPlugin extends Plugin
                         "name" => $conversation->username);
         $errors = array();
         $ticket_id = Ticket::create($ticket_entry, $errors, $ticket_entry["source"]);
+        error_log(print_r($errors, true));
 
         $this->addMessagesToTicket(Ticket::lookup($ticket_id), $messages);
 
