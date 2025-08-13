@@ -9,6 +9,10 @@ class SocialLinkPluginConfig extends PluginConfig {
                 'default' => '',
                 'label' => 'Instagram API Key',
                 'hint' => 'API key for instagram API.',
+                'configuration' => array(
+                    'size'   => 500,
+                    'length' => 200
+                ),
             ]),
             'instagram-verify-token' => new TextboxField([
                 'default' => '',
@@ -20,6 +24,8 @@ class SocialLinkPluginConfig extends PluginConfig {
                 'default' => "",
                 'label' => 'Zero hour',
                 'hint' => 'Unix time to scrape messages since',
+
+
 
             ])
         ];
