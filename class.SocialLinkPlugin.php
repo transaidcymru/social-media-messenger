@@ -183,8 +183,7 @@ class SocialLinkPlugin extends Plugin
         $ticket->postMessage(
             array(
                 "message" => $string,
-                "email" => "void@transaid.cymru",
-                "name" => "void"
+                "userId" => $ticket->getUserId()
             ),
             "API" // TODO: fix me
         );
