@@ -212,8 +212,8 @@ class SocialLinkPlugin extends Plugin
             $ticket->getId(),
             $conversation->id,
             $platform,
-            $messages[count($messages) - 1]->time,
-            $messages[0]->time
+            $messages[0]->time,
+            $messages[count($messages) - 1]->time
         ));
     }
 
