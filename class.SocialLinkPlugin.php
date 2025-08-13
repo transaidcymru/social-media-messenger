@@ -233,8 +233,8 @@ class SocialLinkPlugin extends Plugin
 
         // TODO: do this for each platform.
         
-        $api = new InstagramAPI($this->getConfig()["instagram-api-key"]);
-        $zero_hour = $this->getConfig()["zero-hour"];
+        $api = new InstagramAPI($this->getConfig()->get("instagram-api-key"));
+        $zero_hour = $this->getConfig()->get("zero-hour");
 
         $conversations = $api->getConversations();
         foreach ($conversations as $conversation)
