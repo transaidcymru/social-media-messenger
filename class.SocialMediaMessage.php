@@ -13,7 +13,9 @@ class SocialMediaMessage {
 
     public function encode()
     {
-        return "__SOCIAL_MSG $this->time $this->content\n";
+        // todo: gaping security flaw.
+        $time_formatted = date("Y-m-d H:i:s", $this->time);
+        return "<div id='message'> <script>alert('hehehe');</script><b>$time_formatted</b> $this->content</div>";
     }
 }
 ?>

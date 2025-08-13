@@ -183,6 +183,7 @@ class SocialLinkPlugin extends Plugin
         $ticket->postMessage(
             array(
                 "message" => $string,
+                "type" => "text/html",
                 "userId" => $ticket->getUserId()
             ),
             "API" // TODO: fix me
@@ -195,12 +196,14 @@ class SocialLinkPlugin extends Plugin
         SocialLinkDB\Platform $platform)
     {
         $ticket_entry = array(
-                        "source" => "API",
-                        "source_extra" => $platform->name,
-                        "email" => "void@transaid.cymru",
-                        "name" => "void",
-                        "subject" => $platform->name." ticket from ".$conversation->username,
-                        "message" => join(array_map(fn ($m) => $m->encode(),$messages)));
+            "source" => "API",
+            "source_extra" => $platform->name,
+            "email" => "void@transaid.cymru",
+            "name" => "void",
+            "subject" => $platform->name." ticket from ".$conversation->username,
+            "message" => join(array_map(fn ($m) => $m->encode(),$messages)),
+            "type" => "text/html"
+            );
         $errors = array();
         $ticket = Ticket::create($ticket_entry, $errors, $ticket_entry["source"]);
         error_log(print_r($errors, true));
