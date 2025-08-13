@@ -28,6 +28,7 @@ class InstagramAPI extends SocialLinkAPI {
             self::BASE_URL."/me",
             $this->headers,
             array("fields" => "id")));
+        error_log(print_r($me_request, true));
         return $me_request->id;
     }
 
