@@ -196,7 +196,9 @@ class SocialLinkPlugin extends Plugin
                         "source" => "API",
                         "source_extra" => $platform->name,
                         "email" => "void@transaid.cymru",
-                        "name" => $conversation->username);
+                        "name" => $conversation->username,
+                        "subject" => "Ticket created by SocialLink",
+                        "message" => "It's from ".$platform->name);
         $errors = array();
         $ticket_id = Ticket::create($ticket_entry, $errors, $ticket_entry["source"]);
         error_log(print_r($errors, true));
