@@ -16,8 +16,8 @@ class SocialLinkPluginConfig extends PluginConfig {
                 'hint' => 'Webhook secret set in admin settings to verify webhook requests.',
             ]),
             // TODO: datetime field
-            'zero-hour' => new NumericField([
-                'default' => 0,
+            'zero-hour' => new TextboxField([
+                'default' => "",
                 'label' => 'Zero hour',
                 'hint' => 'Unix time to scrape messages since',
 
