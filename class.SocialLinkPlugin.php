@@ -200,13 +200,13 @@ class SocialLinkPlugin extends Plugin
                         "subject" => "Ticket created by SocialLink",
                         "message" => "It's from ".$platform->name);
         $errors = array();
-        $ticket_id = Ticket::create($ticket_entry, $errors, $ticket_entry["source"]);
+        $ticket = Ticket::create($ticket_entry, $errors, $ticket_entry["source"]);
         error_log(print_r($errors, true));
 
-        $this->addMessagesToTicket(Ticket::lookup($ticket_id), $messages);
+        $this->addMessagesToTicket($ticket, $messages);
 
         SocialLinkDB\insertSocialSession(new SocialLinkDB\SocialSession(
-            $ticket_id,
+            $ticket->getId(),
             $conversation->id,
             $platform,
             $messages[count($messages) - 1]->time,
