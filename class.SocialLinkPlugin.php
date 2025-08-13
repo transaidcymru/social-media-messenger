@@ -200,12 +200,10 @@ class SocialLinkPlugin extends Plugin
                         "email" => "void@transaid.cymru",
                         "name" => "void",
                         "subject" => $platform->name." ticket from ".$conversation->username,
-                        "message" => "It's from ".$platform->name);
+                        "message" => join(array_map(fn ($m) => $m->encode(),$messages)));
         $errors = array();
         $ticket = Ticket::create($ticket_entry, $errors, $ticket_entry["source"]);
         error_log(print_r($errors, true));
-
-        $this->addMessagesToTicket($ticket, $messages);
 
         SocialLinkDB\insertSocialSession(new SocialLinkDB\SocialSession(
             $ticket->getId(),

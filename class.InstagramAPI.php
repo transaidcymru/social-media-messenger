@@ -71,7 +71,7 @@ class InstagramAPI extends SocialLinkAPI {
             $time = strtotime($message->created_time);
             $id = $message->id;
 
-            if ($time < $since)
+            if ($time <= $since)
                 break;
 
             array_push($message_ids, $id);
