@@ -3,7 +3,8 @@ require_once '../../../main.inc.php';
 require_once INCLUDE_DIR.'class.signal.php';
 require_once 'class.SocialLinkPlugin.php';
 
-Signal::send('smm.sync', null, null);
+$nothing = array();
+Signal::send('smm.sync', null, $nothing);
 echo "sinking!!!!!! AHHHHHH";
 
 //$config = SocialLinkPlugin::getConfigStatic();
