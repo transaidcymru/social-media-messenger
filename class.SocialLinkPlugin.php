@@ -182,8 +182,11 @@ class SocialLinkPlugin extends Plugin
         // TODO: as far as i can tell this is sufficient for a successful post. will find out.
         $ticket->postMessage(
             array(
-                "message" => $string
-            )
+                "message" => $string,
+                "email" => "void@transaid.cymru",
+                "name" => "void"
+            ),
+            "API" // TODO: fix me
         );
     }
 
@@ -196,8 +199,8 @@ class SocialLinkPlugin extends Plugin
                         "source" => "API",
                         "source_extra" => $platform->name,
                         "email" => "void@transaid.cymru",
-                        "name" => $conversation->username,
-                        "subject" => "Ticket created by SocialLink",
+                        "name" => "void",
+                        "subject" => $platform->name." ticket from ".$conversation->username,
                         "message" => "It's from ".$platform->name);
         $errors = array();
         $ticket = Ticket::create($ticket_entry, $errors, $ticket_entry["source"]);
