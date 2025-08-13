@@ -97,7 +97,7 @@ class InstagramAPI extends SocialLinkAPI {
                 ));
             }
         }
-        return $ret;
+        return array_reverse($ret);
     }
 
     public function sendMessage(string $conversation_id, string $message_content, &$error=null) {
