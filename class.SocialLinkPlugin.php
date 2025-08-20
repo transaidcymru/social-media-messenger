@@ -33,21 +33,6 @@ class SocialLinkPlugin extends Plugin
     );
     private static $config_static = null;
 
-    // The social media API wrapper
-    private static $api_instagram = null;
-
-    // Retrieve a specific API by id, or instantiate one. Requires config to be loaded, do not call before bootstrap.
-    static function GetAPI($source){
-        switch (source){
-            case 'Instagram':
-                return $this->api_instagram ?? 
-                    $this->api_instagram = new InstagramAPI(self::$config_static->get("instagram-api-key"));
-            default:
-                break;
-        }
-        return null;
-    }
-
     // Static version of 'getConfig' - allows access to plugin config
     // when $this isn't available (i.e. in endpoint.). Plugin isn't 
     // allowed multiple instances so this shouldn't cause problems.
@@ -84,10 +69,6 @@ class SocialLinkPlugin extends Plugin
             {
                 $this->debug_log("Database initialisation failed: $error");
                 return;
-            }
-            else {
-                // Initialise the API instance
-                $this->GetAPI("Instagram");
             }
 
         } catch (Exception $e) {
