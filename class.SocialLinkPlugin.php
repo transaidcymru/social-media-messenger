@@ -142,6 +142,7 @@ class SocialLinkPlugin extends Plugin
             $messages[0]->time,
             $messages[count($messages) - 1]->time
         ));
+        $ticket->releaseLock();
     }
 
     private function updateSession(
