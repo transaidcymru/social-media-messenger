@@ -227,7 +227,8 @@ class SocialLinkPlugin extends Plugin
         // TODO: post messages
         $this->addMessagesToTicket($ticket, $messages);
         
-        SocialLinkDB\updateEndTime($most_recent_session, $messages[0]->time);
+        SocialLinkDB\updateEndTime(
+            $most_recent_session, $messages[count($messages) - 1]->time);
     }
 
     // Pushes new social media messages to osTicket - either creating or updating threads.

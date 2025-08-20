@@ -20,8 +20,8 @@ function newSession($conversation, $messages, $platform) {
         123123,
         $conversation->id,
         $platform,
-        $messages[count($messages) - 1]->time,
-        $messages[0]->time
+        $messages[0]->time,
+        $messages[count($messages) - 1]->time
     ));
 }
 
