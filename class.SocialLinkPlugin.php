@@ -151,7 +151,7 @@ class SocialLinkPlugin extends Plugin
 
         SocialLinkDB\insertSocialSession(new SocialLinkDB\SocialSession(
             $ticket->getId(),
-            $conversation->id,
+            $conversation->user_id,
             $platform,
             $messages[0]->time,
             $messages[count($messages) - 1]->time
@@ -201,7 +201,7 @@ class SocialLinkPlugin extends Plugin
                 continue;
             }
 
-            $associated_sessions = SocialLinkDB\socialSessionsFromChatId($conversation->id);
+            $associated_sessions = SocialLinkDB\socialSessionsFromChatId($conversation->user_id);
 
             $most_recent_session = null;
             foreach ($associated_sessions as $session)
