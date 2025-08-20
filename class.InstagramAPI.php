@@ -100,8 +100,22 @@ class InstagramAPI extends SocialLinkAPI {
         return array_reverse($ret);
     }
 
-    public function sendMessage(string $conversation_id, string $message_content, &$error=null) {
-        
+    public function sendMessage(string $dest_user_id, string $message_content, &$error=null) {
+        // Setup headers
+        $headers = [
+            "Authorization: Bearer ".$this->api_key,
+            "Content-Type: application/json",
+        ];
+
+        // Make the request to the Instagram API with message content
+        $response = $this->get_request(
+            BASE_URL."me/messages",
+            $headers,
+            array(
+                "message" => array("text" => $message_content),
+                "recipient" => array("id" => $dest_user_id)
+            )
+        );
     }
 }
 

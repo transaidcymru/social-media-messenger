@@ -33,6 +33,20 @@ class SocialLinkPlugin extends Plugin
     );
     private static $config_static = null;
 
+    // The social media API wrapper
+    private static $api_instagram = null;
+
+    // Retrieve a specific API by id, or instantiate one. Requires config to be loaded, do not call before bootstrap.
+    static function GetAPI($source){
+        switch (source){
+            case 'Instagram':
+                return $this->api_instagram ?? 
+                    $this->api_instagram = new InstagramAPI(self::$config_static->get("instagram-api-key"));
+            default:
+                break;
+        }
+        return null;
+    }
 
     // Static version of 'getConfig' - allows access to plugin config
     // when $this isn't available (i.e. in endpoint.). Plugin isn't 
@@ -71,6 +85,10 @@ class SocialLinkPlugin extends Plugin
                 $this->debug_log("Database initialisation failed: $error");
                 return;
             }
+            else {
+                // Initialise the API instance
+                $this->GetAPI("Instagram");
+            }
 
         } catch (Exception $e) {
             error_log($e->getMessage());
@@ -79,59 +97,24 @@ class SocialLinkPlugin extends Plugin
     }
 
     // Pushes osTicket updates to social media platforms.
-    public function onThreadUpdate($entry, $data)
+    // Called by threadentry.created signal.
+    public function onNewEntry($entry)
     {
         // Get associated ticket
-        $ticket_id = $entry->getParent();
+        $ticket = $entry->getParent();
 
-        $ticket = Ticket::lookup($ticket_id);
-        if (!$ticket) {
-            error_log(self::PLUGIN_NAME."NO ticket associated with $ticket_id");
+        $session = SocialLinkDB\getSocialSessionFromTicketId($ticket->getId());
+        if ($session === null) {
+            // early out
             return;
         }
+        
+        if ($entry->getTypeName() === 'response'){
+            
+        $api_key = self::$config_static->get("instagram-api-key");
+        $api = new InstagramAPI($api_key);
 
-        // TODO: i think this is unnecessary - should be able to get source_extra from the ticket object.
-        $source_extra_query = db_query(
-            "SELECT source_extra from ".TICKET_TABLE." WHERE ticket_id=" . strval($ticket_id) . ";"
-        );
-
-        if (false === $source_extra_query) {
-            error_log(self::PLUGIN_NAME . ": Database query failure.");
-            return;
         }
-
-        if ($source_extra_query->num_rows != 1) {
-            error_log(self::PLUGIN_NAME . ": something went wrong here");
-            return;
-        }
-
-        $source_extra = $source_extra_query->fetch_assoc()["source_extra"];
-
-        // filter out thread updates we don't care about.
-        if ($ticket->getSource() != "Other" &&
-            !in_array($source_extra, self::SOURCES)) {
-            return;
-        }
-
-        $session_table_query = db_query(
-            "SELECT * from ".self::TABLE_NAME." where ticket-id=" . strval($ticket_id) . ";"
-        );
-
-        if (false === $session_table_query) {
-            error_log(self::PLUGIN_NAME . ": Database query failure.");
-            return;
-        }
-
-        if ($session_table_query->num_rows != 1) {
-            error_log(self::PLUGIN_NAME . ": what the FUCK");
-            return;
-        }
-
-        // get all of the info from the thread update
-        $session_table_row = $session_table_query->fetch_assoc();
-
-        // push to social media
-        error_log(self::PLUGIN_NAME . ": ARRAY!!! " . json_encode($session_table_row));
     }
 
     private function addMessagesToTicket(Ticket $ticket, array $messages)
@@ -218,7 +201,7 @@ class SocialLinkPlugin extends Plugin
                 continue;
             }
 
-            $associated_sessions = SocialLinkDB\socialSessionsFromChatID($conversation->id);
+            $associated_sessions = SocialLinkDB\socialSessionsFromChatId($conversation->id);
 
             $most_recent_session = null;
             foreach ($associated_sessions as $session)
