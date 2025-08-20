@@ -81,16 +81,21 @@ class SocialLinkPlugin extends Plugin
     // Called by threadentry.created signal. 
     public function onNewEntry($entry)
     {
+        error_log("creating new thread entry...");
+
         // Get associated ticket
         $ticket = $entry->getParent();
 
         $session = SocialLinkDB\getSocialSessionFromTicketId($ticket->getId());
         if ($session === null) {
             // early out
+            error_log("it broke :(");
             return;
         }
         
         if ($entry->getTypeName() === 'response'){
+            error_log("thread entry type is response...");
+
             $api_key = self::$config_static->get("instagram-api-key");
             $api = new InstagramAPI($api_key);
 
@@ -98,6 +103,8 @@ class SocialLinkPlugin extends Plugin
             $created_time = $api->sendMessage($session->chat_id, $entry->getBody(), $error);
 
             if ($error === null){
+                error_log("updating end time!!!!");
+
                 SocialLinkDB\updateEndTime($session, strtotime($created_time));
             }
         }
