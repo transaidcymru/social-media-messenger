@@ -24,7 +24,7 @@ class SocialLinkAPI {
         return $output;
     }
 
-    public function post_request(string $endpoint, array $headers, array $params=null)
+    public function post_request(string $endpoint, array $headers, string $body, array $params=null)
     {
         $url = $endpoint;
         if ($params != null)
@@ -33,7 +33,7 @@ class SocialLinkAPI {
         }
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
