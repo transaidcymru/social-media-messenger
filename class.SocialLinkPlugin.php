@@ -86,6 +86,11 @@ class SocialLinkPlugin extends Plugin
         // Get associated ticket
         $ticket = $entry->getParent();
 
+        if ($ticket === null){
+            error_log("SCREAMING");
+            return;
+        }
+
         $session = SocialLinkDB\getSocialSessionFromTicketId($ticket->getId());
         if ($session === null) {
             // early out
