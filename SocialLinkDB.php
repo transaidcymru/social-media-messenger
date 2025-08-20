@@ -103,25 +103,39 @@ function initTable(&$error = null)
     return;
 }
 
-function isSocialLinkTicket($ticket_id, &$error=null): bool
+function getSocialSessionFromTicketId(int $ticket_id, &$error=null): SocialSession | null
 {
     $q = selectionQuery(
         "SELECT * from ".TABLE_NAME." WHERE ticket_id=".strval($ticket_id).";",
         $error
     );
     if ($error !== null)
-        return false;
+        return null;
 
     if ($q->num_rows > 1)
     {
         $error = "Database corrupt: more than one SocialLink associated with given ticket id.";
-        return false;
+        return null;
     }
 
-    return $q->num_rows === 1;
+    if ($q->num_rows === 1){
+        $row = $q->fetch_row();
+        
+        return new SocialSession(
+            $row["ticket_id"],
+            $row["chat_id"],
+            Platform::fromName($row["platform"]),
+            strtotime($row["timestamp_start"]),
+            strtotime($row["timestamp_end"]),
+            $row["session_id"],
+            session_type: $row["session_type"] ?? ""
+        );
+    }
+
+    return null;
 }
 
-function socialSessionsFromChatID(string $chat_id, &$error=null): array
+function socialSessionsFromChatId(string $chat_id, &$error=null): array
 {
     $q = selectionQuery(
         "SELECT * FROM ".TABLE_NAME." WHERE chat_id='$chat_id';",

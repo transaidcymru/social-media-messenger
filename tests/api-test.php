@@ -58,7 +58,7 @@ foreach ($conversations as $conversation)
         continue;
     }
 
-    $associated_sessions = SocialLinkDB\socialSessionsFromChatID($conversation->id);
+    $associated_sessions = SocialLinkDB\socialSessionsFromChatId($conversation->id);
 
     $most_recent_session = null;
     foreach ($associated_sessions as $session)
