@@ -188,6 +188,7 @@ class SocialLinkPlugin extends Plugin
         $end_time = $messages[count($messages) - 1]->time;
         SocialLinkDB\updateEndTime(
             $most_recent_session, $end_time);
+        $ticket->releaseLock();
     }
 
     // Pushes new social media messages to osTicket - either creating or updating threads.
