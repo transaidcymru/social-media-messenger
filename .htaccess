@@ -1,5 +1,0 @@
-Deny from all
-
-<Files "webhook.php">
-    Allow from all
-</Files>
