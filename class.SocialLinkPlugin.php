@@ -55,25 +55,25 @@ class SocialLinkPlugin extends Plugin
     // -- Main Procedure -------------------------------------------------------
     public function bootstrap()
     {
-        try {
-            self::$config_static = $this->getConfig();
+        #try {
+        #    self::$config_static = $this->getConfig();
 
-            #Signal::connect('threadentry.created', array($this, 'sync'));
-            Signal::connect('cron', array($this, 'sync'));
-            Signal::connect('smm.instagram-webhook', array($this, 'instagramWebhook'));
-            Signal::connect('smm.sync', array($this, 'sync'));
+        #    #Signal::connect('threadentry.created', array($this, 'sync'));
+        #    Signal::connect('cron', array($this, 'sync'));
+        #    Signal::connect('smm.instagram-webhook', array($this, 'instagramWebhook'));
+        #    Signal::connect('smm.sync', array($this, 'sync'));
 
-            $error = null;
-            SocialLinkDB\initTable($error);
-            if ($error !== null)
-            {
-                $this->debug_log("Database initialisation failed: $error");
-                return;
-            }
+        #    $error = null;
+        #    SocialLinkDB\initTable($error);
+        #    if ($error !== null)
+        #    {
+        #        $this->debug_log("Database initialisation failed: $error");
+        #        return;
+        #    }
 
-        } catch (Exception $e) {
-            error_log($e->getMessage());
-        }
+        #} catch (Exception $e) {
+        #    error_log($e->getMessage());
+        #}
 
     }
 
