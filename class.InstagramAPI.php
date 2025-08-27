@@ -108,14 +108,36 @@ class InstagramAPI extends SocialLinkAPI {
         ];
 
         // Make the request to the Instagram API with message content
-        $response = $this->get_request(
-            BASE_URL."me/messages",
+        $response = json_decode($this->post_request(
+            self::BASE_URL."me/messages",
             $headers,
-            array(
+            json_encode(array(
                 "message" => array("text" => $message_content),
                 "recipient" => array("id" => $dest_user_id)
-            )
-        );
+            ))
+        ));
+
+        // TODO error handling
+        if ($response === null){
+            // help
+        }
+        else{
+            $message_req = json_decode($this->get_request(
+                self::BASE_URL."/".$response->message_id,
+                $this->headers,
+                array("fields" => "created_time")
+            ));
+
+            // help more error handling pls TODO
+            if ($message_req === null){
+
+            }else{
+                // TODO: Flag for sync update if request is successful
+                return $message_req->created_time;
+            }
+        }
+
+        return $response;
     }
 }
 

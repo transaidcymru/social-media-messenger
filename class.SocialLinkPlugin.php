@@ -62,7 +62,6 @@ class SocialLinkPlugin extends Plugin
         #    Signal::connect('cron', array($this, 'sync'));
         #    Signal::connect('smm.instagram-webhook', array($this, 'instagramWebhook'));
         #    Signal::connect('smm.sync', array($this, 'sync'));
-
         #    $error = null;
         #    SocialLinkDB\initTable($error);
         #    if ($error !== null)
@@ -78,23 +77,40 @@ class SocialLinkPlugin extends Plugin
     }
 
     // Pushes osTicket updates to social media platforms.
-    // Called by threadentry.created signal.
+    // Called by threadentry.created signal. 
     public function onNewEntry($entry)
     {
+        error_log("creating new thread entry...");
+
         // Get associated ticket
         $ticket = $entry->getParent();
+
+        if ($ticket === null){
+            error_log("SCREAMING");
+            return;
+        }
 
         $session = SocialLinkDB\getSocialSessionFromTicketId($ticket->getId());
         if ($session === null) {
             // early out
+            error_log("it broke :(");
             return;
         }
         
         if ($entry->getTypeName() === 'response'){
-            
-        $api_key = self::$config_static->get("instagram-api-key");
-        $api = new InstagramAPI($api_key);
+            error_log("thread entry type is response...");
 
+            $api_key = self::$config_static->get("instagram-api-key");
+            $api = new InstagramAPI($api_key);
+
+            $error = null;
+            $created_time = $api->sendMessage($session->chat_id, $entry->getBody(), $error);
+
+            if ($error === null){
+                error_log("updating end time!!!!");
+
+                SocialLinkDB\updateEndTime($session, strtotime($created_time));
+            }
         }
     }
 
@@ -137,6 +153,7 @@ class SocialLinkPlugin extends Plugin
             $messages[0]->time,
             $messages[count($messages) - 1]->time
         ));
+        $ticket->releaseLock();
     }
 
     private function updateSession(
