@@ -1,9 +1,9 @@
 <?php
-require_once "class.SocialLinkAPI.php";
+//require_once 'class.SocialLinkAPI.php';
 //require_once "class.SocialMediaConversation.php";
 //require_once "class.SocialMediaMessage.php";
 
-class InstagramAPI extends SocialLinkAPI {
+class InstagramAPI {
     const BASE_URL = "https://graph.instagram.com/v23.0/";
     private string $api_key;
     private string $my_id;
