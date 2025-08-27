@@ -17,7 +17,7 @@ foreach ([
 require_once 'config.php';
 require_once 'mysqli.php';
 require_once 'SocialLinkDB.php';
-#require_once 'class.InstagramAPI.php';
+require_once 'class.InstagramAPI.php';
 
 class SocialLinkPlugin extends Plugin
 {
