@@ -90,10 +90,11 @@ class SocialLinkPlugin extends Plugin
             return;
         }
 
-        $session = SocialLinkDB\getSocialSessionFromTicketId($ticket->getId());
+        $error = null;
+        $session = SocialLinkDB\getSocialSessionFromTicketId($ticket->getId(), $error);
         if ($session === null) {
             // early out
-            error_log("it broke :(");
+            error_log("it broke :( Error: ".$error);
             return;
         }
         

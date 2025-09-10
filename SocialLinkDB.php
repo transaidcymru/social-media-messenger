@@ -109,6 +109,9 @@ function getSocialSessionFromTicketId(int $ticket_id, &$error=null): SocialSessi
         "SELECT * from ".TABLE_NAME." WHERE ticket_id=".strval($ticket_id).";",
         $error
     );
+
+    error_log("getSocialSessionFromTicketId call => \"ticketId=".strval($ticket_id))."\"";
+    
     if ($error !== null)
         return null;
 
@@ -130,6 +133,9 @@ function getSocialSessionFromTicketId(int $ticket_id, &$error=null): SocialSessi
             $row["session_id"],
             session_type: $row["session_type"] ?? ""
         );
+    }
+    else{
+        error_log("getSocialSessionFromTicketId call => \"ticketId=".strval($ticket_id))."\" returned 0 rows!";
     }
 
     return null;
