@@ -1,7 +1,85 @@
 <?php
-require_once "class.SocialLinkAPI.php";
-//require_once "class.SocialMediaConversation.php";
-//require_once "class.SocialMediaMessage.php";
+
+// Base class for social media API implementations (e.g. Facebook, BlueSky etc.).
+class SocialLinkAPI {
+
+    public function getConversations(&$error=null): array {
+        return array();
+    }
+
+    public function get_request(string $endpoint, array $headers, array $params=null)
+    {
+        $url = $endpoint;
+        if ($params != null)
+        {
+            $url = $endpoint."?".http_build_query($params);
+        }
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        $output = curl_exec($ch);
+        curl_close($ch);
+        return $output;
+    }
+
+    public function post_request(string $endpoint, array $headers, string $body, array $params=null)
+    {
+        $url = $endpoint;
+        if ($params != null)
+        {
+            $url = $endpoint."?".http_build_query($params);
+        }
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        $output = curl_exec($ch);
+        curl_close($ch);
+        return $output;
+    }
+
+    public function sendMessage(string $conversation_id, string $message_content, &$error=null) {
+        
+    }
+}
+
+class SocialMediaConversation {
+    public string $id;
+    public string $user_id;
+    public string $username;
+    public int $updated_time;
+
+    function __construct(string $id, string $user_id, string $username, int $updated_time)
+    {
+        $this->id = $id;
+        $this->updated_time = $updated_time;
+        $this->user_id = $user_id;
+        $this->username = $username;
+    }
+}
+
+class SocialMediaMessage {
+    public string $content;
+    public string $id;
+    public int $time;
+
+    function __construct(string $id, int $time, string $content)
+    {
+        $this->id = $id;
+        $this->time = $time;
+        $this->content = $content;
+    }
+
+    public function encode()
+    {
+        $time_formatted = date("Y-m-d H:i:s", $this->time);
+        return "<div id='message' style='background-image: linear-gradient(90deg, #5BCEFA 0%, #5BCEFA 20%, #F5A9B8 20%, #F5A9B8 40%, #ffffff 40%, #ffffff 60%, #F5A9B8 60%, #F5A9B8 80%, #5BCEFA 80%, #5BCEFA 100%);'><b>$time_formatted</b>$this->content</div>";
+    }
+}
 
 class InstagramAPI extends SocialLinkAPI {
     const BASE_URL = "https://graph.instagram.com/v23.0/";
@@ -140,5 +218,3 @@ class InstagramAPI extends SocialLinkAPI {
         return $response;
     }
 }
-
-?>
