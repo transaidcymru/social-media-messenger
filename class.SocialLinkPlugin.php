@@ -83,7 +83,7 @@ class SocialLinkPlugin extends Plugin
         error_log("creating new thread entry...");
 
         // Get associated ticket
-        $ticket = $entry->getParent();
+        $ticket = $entry->getThreadId();
 
         if ($ticket === null){
             error_log("SCREAMING");

@@ -110,7 +110,7 @@ function getSocialSessionFromTicketId(int $ticket_id, &$error=null): SocialSessi
         $error
     );
 
-    error_log("getSocialSessionFromTicketId call => \"ticketId=".strval($ticket_id))."\"";
+    error_log("getSocialSessionFromTicketId call => \"ticketId=".strval($ticket_id))."\" ";
     
     if ($error !== null)
         return null;
