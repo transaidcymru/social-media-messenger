@@ -105,7 +105,7 @@ class SocialLinkPlugin extends Plugin
             $api = new InstagramAPI($api_key);
 
             $error = null;
-            $created_time = $api->sendMessage($session->chat_id, $entry->getBody(), $error);
+            $created_time = $api->sendMessage($session->chat_id, strip_tags($entry->getBody()), $error);
 
             if ($error === null){
                 error_log("updating end time!!!!");
