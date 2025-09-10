@@ -58,7 +58,7 @@ class SocialLinkPlugin extends Plugin
         try {
             self::$config_static = $this->getConfig();
 
-            #Signal::connect('threadentry.created', array($this, 'sync'));
+            Signal::connect('threadentry.created', array($this, 'onNewEntry'));
             Signal::connect('cron', array($this, 'sync'));
             Signal::connect('smm.instagram-webhook', array($this, 'instagramWebhook'));
             Signal::connect('smm.sync', array($this, 'sync'));
