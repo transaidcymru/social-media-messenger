@@ -110,7 +110,7 @@ function getSocialSessionFromTicketId(int $ticket_id, &$error=null): SocialSessi
         $error
     );
 
-    error_log("getSocialSessionFromTicketId call => \"ticketId=".strval($ticket_id))."\" ";
+    error_log("getSocialSessionFromTicketId call => \"ticketId=".strval($ticket_id))."\"";
     
     if ($error !== null)
         return null;
@@ -122,12 +122,12 @@ function getSocialSessionFromTicketId(int $ticket_id, &$error=null): SocialSessi
     }
 
     if ($q->num_rows === 1){
-        $row = $q->fetch_row();
+        $row = $q->fetch_assoc();
         
         return new SocialSession(
             $row["ticket_id"],
             $row["chat_id"],
-            Platform::fromName($row["platform"]),
+            Platform::fromName(name: $row["platform"]),
             strtotime($row["timestamp_start"]),
             strtotime($row["timestamp_end"]),
             $row["session_id"],
@@ -135,7 +135,7 @@ function getSocialSessionFromTicketId(int $ticket_id, &$error=null): SocialSessi
         );
     }
     else{
-        error_log("getSocialSessionFromTicketId call => \"ticketId=".strval($ticket_id))."\" returned 0 rows!";
+        error_log(message: "getSocialSessionFromTicketId call => \"ticketId=".strval($ticket_id))."\" returned 0 rows!";
     }
 
     return null;
