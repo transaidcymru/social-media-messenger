@@ -83,15 +83,15 @@ class SocialLinkPlugin extends Plugin
         error_log("creating new thread entry...");
 
         // Get associated ticket
-        $ticket = $entry->getThreadId();
+        $ticketId = $entry->getThreadId();
 
-        if ($ticket === null){
+        if ($ticketId === null){
             error_log("SCREAMING");
             return;
         }
 
         $error = null;
-        $session = SocialLinkDB\getSocialSessionFromTicketId($ticket->getId(), $error);
+        $session = SocialLinkDB\getSocialSessionFromTicketId($ticketId, $error);
         if ($session === null) {
             // early out
             error_log("it broke :( Error: ".$error);
