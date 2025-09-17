@@ -218,7 +218,8 @@ class SocialLinkPlugin extends Plugin
             $new_session = $first_session || !$has_open_session;
 
             // more short circuiting. This triggers if we found the session but it's up to date.
-            if (!$new_session && $conversation->updated_time <= $most_recent_session->timestamp_end)
+            if (!$first_session &&
+                $conversation->updated_time <= $most_recent_session->timestamp_end)
             {
                 print_r("Nothing to do!! continuing on\n");
                 continue;
