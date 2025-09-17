@@ -138,13 +138,13 @@ class InstagramAPI extends SocialLinkAPI {
         return $ret;
     }
     public function getMessages(string $conversation_id, int $since) {
-        $message_ids = array();
         $conversation_req = json_decode($this->get_request(
-            self::BASE_URL."/".$conversation_id,
+            self::BASE_URL."/".$conversation_id."/messages",
             $this->headers,
-            array("fields" => "messages", "limit" => "20")
+            array("fields" => "created_time,from,message", "limit" => "20")
         ));
 
+        $messages = array();
         foreach ($conversation_req->messages->data as $message)
         {
             $time = strtotime($message->created_time);
@@ -153,30 +153,14 @@ class InstagramAPI extends SocialLinkAPI {
             if ($time <= $since)
                 break;
 
-            array_push($message_ids, $id);
-        }
-
-        // TODO: parallelize
-        // https://danielrotter.at/2025/04/12/batch-curl-requests-in-php-using-multi-handles.html
-        $ret = array();
-        foreach($message_ids as $id)
-        {
-            $message_req = json_decode($this->get_request(
-                self::BASE_URL."/".$id,
-                $this->headers,
-                array("fields" => "created_time,from,message")
+            array_push($messages, new SocialMediaMessage(
+                $id,
+                $time,
+                $message->message
             ));
-
-            if ($message_req->from->id !== $this->my_id)
-            {
-                array_push($ret, new SocialMediaMessage(
-                    $id,
-                    strtotime($message_req->created_time),
-                    $message_req->message
-                ));
-            }
         }
-        return array_reverse($ret);
+
+        return array_reverse($messages);
     }
 
     public function sendMessage(string $dest_user_id, string $message_content, &$error=null) {

@@ -2,6 +2,7 @@
 import requests
 import os
 import json
+from pprint import pp
 
 API_KEY = os.environ["API_KEY"]
 print(API_KEY)
@@ -22,11 +23,14 @@ r0 = requests.get("https://graph.instagram.com/v23.0/me/conversations",
 response = r0.json()
 convo = response["data"][0]["id"]
 
-r1 = requests.get(f"https://graph.instagram.com/v23.0/{convo}",
-             headers=headers, params={"fields": "messages"})
+r1 = requests.get(f"https://graph.instagram.com/v23.0/{convo}/messages",
+             headers=headers, params={"fields": "id,created_time,from,to,message"})
+
+jay_somme = r1.json()
+pp(jay_somme)
 
 
-message = r1.json()["messages"]["data"][0]["id"]
+message = jay_somme["messages"]["data"][0]["id"]
 
 r2 = requests.get(f"https://graph.instagram.com/v23.0/{message}",
              headers=headers, params={"fields": "id,created_time,from,to,message"})
