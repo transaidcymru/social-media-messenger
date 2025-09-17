@@ -212,8 +212,10 @@ class SocialLinkPlugin extends Plugin
             }
 
             // this will short circuit. no type worries.
-            $new_session = $most_recent_session === null
-                || !Ticket::lookup($most_recent_session->ticket_id)->isOpen();
+
+            $first_session = $most_recent_session === null;
+            $has_open_session = Ticket::lookup($most_recent_session->ticket_id)->isOpen();
+            $new_session = $first_session || !$has_open_session;
 
             // more short circuiting. This triggers if we found the session but it's up to date.
             if (!$new_session && $conversation->updated_time <= $most_recent_session->timestamp_end)
@@ -223,8 +225,8 @@ class SocialLinkPlugin extends Plugin
             }
 
             // if we get this far we have tickets to update/create.
+            $update_since = $first_session ? $zero_hour : $most_recent_session->timestamp_end;
 
-            $update_since = $new_session ? $zero_hour : $most_recent_session->timestamp_end;
             $messages = $api->getMessages($conversation->id, $update_since);
 
             if($new_session)
