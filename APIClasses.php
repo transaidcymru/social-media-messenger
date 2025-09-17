@@ -144,6 +144,7 @@ class InstagramAPI extends SocialLinkAPI {
             array("fields" => "created_time,from,message", "limit" => "20")
         ));
 
+        error_log(print_r($conversation_req, true));
         $messages = array();
         foreach ($conversation_req->messages->data as $message)
         {

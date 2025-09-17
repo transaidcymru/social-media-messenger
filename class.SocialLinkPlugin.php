@@ -229,6 +229,7 @@ class SocialLinkPlugin extends Plugin
             $update_since = $first_session ? $zero_hour : $most_recent_session->timestamp_end;
 
             $messages = $api->getMessages($conversation->id, $update_since);
+            error_log(print_r($messages, true));
 
             if($new_session)
                 $this->newSession($conversation, $messages, SocialLinkDB\Platform::Instagram);
