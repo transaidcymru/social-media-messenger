@@ -146,7 +146,7 @@ class InstagramAPI extends SocialLinkAPI {
 
         error_log(print_r($conversation_req, true));
         $messages = array();
-        foreach ($conversation_req->messages->data as $message)
+        foreach ($conversation_req->data as $message)
         {
             $time = strtotime($message->created_time);
             $id = $message->id;

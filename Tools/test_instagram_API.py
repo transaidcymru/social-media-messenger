@@ -17,7 +17,7 @@ params = {
 }
 
 r0 = requests.get("https://graph.instagram.com/v23.0/me/conversations",
-             headers=headers, params={"fields": ""})
+             headers=headers, params={"fields": "updated_time"})
 
 
 response = r0.json()
@@ -27,6 +27,7 @@ r1 = requests.get(f"https://graph.instagram.com/v23.0/{convo}/messages",
              headers=headers, params={"fields": "id,created_time,from,to,message"})
 
 jay_somme = r1.json()
+print(response["data"][0])
 pp(jay_somme)
 
 
