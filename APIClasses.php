@@ -1,4 +1,5 @@
 <?php
+require_once INCLUDE_DIR . "class.format.php";
 
 // Base class for social media API implementations (e.g. Facebook, BlueSky etc.).
 class SocialLinkAPI {
@@ -76,8 +77,8 @@ class SocialMediaMessage {
 
     public function encode()
     {
-        $time_formatted = date("Y-m-d H:i:s", $this->time);
-        return "<div style='margin: 1em;'> <div style='font-size: smaller'>$time_formatted</div> <div style='background-image:linear-gradient(0deg, #5BCEFA 0%, #5BCEFA 20%, #F5A9B8 20%, #F5A9B8 40%, #ffffff 40%, #ffffff 60%, #F5A9B8 60%, #F5A9B8 80%, #5BCEFA 80%, #5BCEFA 100%); width: fit-content;padding:0.5em; border-radius:1em 1em 1em 0em;'><div style='padding:0.5em;backgrond-color:white; border-radius:0.5em 0.5em 0.5em 0em'>$this->content</div></div></div>
+        $time_formatted = Format::datetime("Y-m-d H:i:s", $this->time);
+        return "<div style='margin: 1em;'> <div style='font-size: smaller'>$time_formatted</div> <div style='background-image:linear-gradient(0deg, #5BCEFA 0%, #5BCEFA 20%, #F5A9B8 20%, #F5A9B8 40%, #ffffff 40%, #ffffff 60%, #F5A9B8 60%, #F5A9B8 80%, #5BCEFA 80%, #5BCEFA 100%); width: fit-content;padding:0.5em; border-radius:1em 1em 1em 0em;'><div style='padding:0.5em;background-color:white; border-radius:0.5em 0.5em 0.5em 0em'>$this->content</div></div></div>
 ";
     }
 }
