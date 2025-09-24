@@ -177,8 +177,7 @@ class SocialLinkPlugin extends Plugin
     public function sync($object, $data)
     {
         // pull messages from social media and sync
-        error_log("fetching");
-        global $ost;
+        $this->log("This is so fetch.");
 
         // TODO: do this for each platform.
         
