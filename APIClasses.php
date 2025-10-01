@@ -166,7 +166,7 @@ class InstagramAPI extends SocialLinkAPI {
             ));
 
             if ($message->attachments->data !== null && $message->attachments->data[0] !== null){
-                $data = file_get_contents($message->attachments->data[0]->imageData->url);
+                $data = file_get_contents($message->attachments->data[0]->image_data->url);
                 error_log("\n\n");
                 error_log("BEGIN IMAGE");
                 error_log($data);
