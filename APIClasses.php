@@ -65,14 +65,16 @@ class SocialMediaConversation {
 
 class SocialMediaMessage {
     public string $content;
+    public array $attachments;
     public string $id;
     public int $time;
 
-    function __construct(string $id, int $time, string $content)
+    function __construct(string $id, int $time, string $content, array $attachments)
     {
         $this->id = $id;
         $this->time = $time;
         $this->content = $content;
+        $this->attachments = $attachments;
     }
 
     public function encode()
@@ -158,7 +160,8 @@ class InstagramAPI extends SocialLinkAPI {
             array_push($messages, new SocialMediaMessage(
                 $id,
                 $time,
-                $message->message
+                $message->message,
+                $message->attachments->data
             ));
         }
 
