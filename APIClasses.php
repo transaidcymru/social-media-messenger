@@ -145,7 +145,7 @@ class InstagramAPI extends SocialLinkAPI {
         $conversation_req = json_decode($this->get_request(
             self::BASE_URL."/".$conversation_id."/messages",
             $this->headers,
-            array("fields" => "created_time,from,message", "limit" => "20")
+            array("fields" => "created_time,from,message,attachments", "limit" => "20")
         ));
 
         error_log(print_r($conversation_req, true));
