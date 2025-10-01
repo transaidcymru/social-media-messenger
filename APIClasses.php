@@ -166,7 +166,17 @@ class InstagramAPI extends SocialLinkAPI {
             ));
 
             if ($message->attachments->data !== null && $message->attachments->data[0] !== null){
-                $data = file_get_contents($message->attachments->data[0]->image_data->url);
+                $context = stream_context_create([
+                    "http" => [
+                        "method" => "GET",
+                        "header" => "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:143.0) Gecko/20100101 Firefox/143.0"
+                    ]
+                ]);
+                $data = file_get_contents(
+                    $message->attachments->data[0]->image_data->url,
+                    false,
+                    $context
+                );
                 error_log("\n\n");
                 error_log("BEGIN IMAGE");
                 error_log($data);
