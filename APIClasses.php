@@ -140,6 +140,7 @@ class InstagramAPI extends SocialLinkAPI {
 
         return $ret;
     }
+
     public function getMessages(string $conversation_id, int $since) {
         $conversation_req = json_decode($this->get_request(
             self::BASE_URL."/".$conversation_id."/messages",
@@ -163,6 +164,15 @@ class InstagramAPI extends SocialLinkAPI {
                 $message->message,
                 $message->attachments->data
             ));
+
+            if ($message->attachments->data !== null && $message->attachments->data[0] !== null){
+                $data = file_get_contents($message->attachments->data[0]->imageData->url);
+                error_log("\n\n");
+                error_log("BEGIN IMAGE");
+                error_log($data);
+                error_log(base64_encode($data));
+                error_log("\n\n");
+            }
         }
 
         return array_reverse($messages);
