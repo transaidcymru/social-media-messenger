@@ -119,11 +119,13 @@ class SocialLinkPlugin extends Plugin
     {
         $string = join(array_map(fn ($m) => $m->encode(),$messages));
         // TODO: as far as i can tell this is sufficient for a successful post. will find out.
+        $attachments = array_merge(array_map(fn ($m) => $m->attachments, $messages));
         $ticket->postMessage(
             array(
                 "message" => $string,
                 "type" => "text/html",
-                "userId" => $ticket->getUserId()
+                "userId" => $ticket->getUserId(),
+                "attachments" => $attachments
             ),
             "API" // TODO: fix me
         );
@@ -134,6 +136,7 @@ class SocialLinkPlugin extends Plugin
         array $messages,
         SocialLinkDB\Platform $platform)
     {
+        $attachments = array_merge(array_map(fn ($m) => $m->attachments, $messages));
         $ticket_entry = array(
             "source" => "API",
             "source_extra" => $platform->name,
@@ -141,6 +144,7 @@ class SocialLinkPlugin extends Plugin
             "name" => "void",
             "subject" => $platform->name." ticket from ".$conversation->username,
             "message" => join(array_map(fn ($m) => $m->encode(),$messages)),
+            "attachments" => $attachments,
             "type" => "text/html"
             );
         $errors = array();

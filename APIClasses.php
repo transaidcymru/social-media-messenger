@@ -68,13 +68,16 @@ class SocialMediaMessage {
     public array $attachments;
     public string $id;
     public int $time;
+    private array $inlineImageIds;
 
-    function __construct(string $id, int $time, string $content, array|null $attachments)
+    function __construct(string $id, int $time, string $content, array $attachments)
     {
         $this->id = $id;
         $this->time = $time;
         $this->content = $content;
-        if ($attachments !== null)
+        $this->inlineImageIds = array();
+        $this->attachments = array();
+        if (!$attachments)
             $this->processAttachments($attachments);
     }
 
@@ -98,14 +101,29 @@ class SocialMediaMessage {
             error_log($data);
             error_log(base64_encode($data));
             error_log("\n\n");
+            $file_info = new finfo(FILEINFO_MIME_TYPE);
+            $mime = $file_info->buffer($data);
+            $file = array(
+                "type" => $mime,
+                "name" => md5($attachment->image_data->url),
+                "data" => $data 
+            );
+            $af = AttachmentFile::create($file);
+            $inline = $mime === "image/jpeg";
+            $this->attachments[$file['key']] = array(
+                "id" => $af->getId(),
+                "inline" => $inline,
+                "file" => $af);
+            if ($inline)
+                array_push($this->inlineImageIds, $file['key']);
         }
     }
 
     public function encode()
     {
         $time_formatted = Format::datetime("Y-m-d H:i:s", $this->time);
-        return "<div style='margin: 1em;'> <div style='font-size: smaller'>$time_formatted</div> <div style='background-image:linear-gradient(0deg, #5BCEFA 0%, #5BCEFA 20%, #F5A9B8 20%, #F5A9B8 40%, #ffffff 40%, #ffffff 60%, #F5A9B8 60%, #F5A9B8 80%, #5BCEFA 80%, #5BCEFA 100%); width: fit-content;padding:0.5em; border-radius:1em 1em 1em 0em;'><div style='padding:0.5em;background-color:white; border-radius:0.5em 0.5em 0.5em 0em'>$this->content</div></div></div>
-";
+        $imageString = join(array_map(fn ($m) => "<figure><img src='cid:$m' data-image='$m' alt='image'/></figure>",$this->inlineImageIds));
+        return "<div style='margin: 1em;'> <div style='font-size: smaller'>$time_formatted</div> <div style='background-image:linear-gradient(0deg, #5BCEFA 0%, #5BCEFA 20%, #F5A9B8 20%, #F5A9B8 40%, #ffffff 40%, #ffffff 60%, #F5A9B8 60%, #F5A9B8 80%, #5BCEFA 80%, #5BCEFA 100%); width: fit-content;padding:0.5em; border-radius:1em 1em 1em 0em;'><div style='padding:0.5em;background-color:white; border-radius:0.5em 0.5em 0.5em 0em'>$imageString $this->content</div></div></div>";
     }
 }
 
@@ -186,7 +204,7 @@ class InstagramAPI extends SocialLinkAPI {
                 $id,
                 $time,
                 $message->message,
-                $message->attachments->data ?? null
+                $message->attachments->data ?? array()
             ));
 
         }
