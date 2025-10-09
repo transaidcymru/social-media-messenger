@@ -77,8 +77,12 @@ class SocialMediaMessage {
         $this->content = $content;
         $this->inlineImageIds = array();
         $this->attachments = array();
+        error_log(print_r($attachments, true));
         if (!$attachments)
+        {
+            error_log("here!");
             $this->processAttachments($attachments);
+        }
     }
 
     private function processAttachments(array $attachments)
@@ -201,7 +205,7 @@ class InstagramAPI extends SocialLinkAPI {
                 break;
             error_log("--------------------------------------------------------------------------------");
 
-            error_log(print_r($message->attachments, true));
+            error_log(print_r($message->attachments->, true));
             error_log("--------------------------------------------------------------------------------");
             array_push($messages, new SocialMediaMessage(
                 $id,
