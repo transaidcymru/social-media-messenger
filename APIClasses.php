@@ -205,7 +205,7 @@ class InstagramAPI extends SocialLinkAPI {
                 break;
             error_log("--------------------------------------------------------------------------------");
 
-            error_log(print_r($message->attachments->, true));
+            error_log(print_r($message->attachments->data, true));
             error_log("--------------------------------------------------------------------------------");
             array_push($messages, new SocialMediaMessage(
                 $id,
