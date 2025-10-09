@@ -78,7 +78,7 @@ class SocialMediaMessage {
         $this->inlineImageIds = array();
         $this->attachments = array();
         error_log(print_r($attachments, true));
-        if (!$attachments)
+        if ($attachments)
         {
             error_log("here!");
             $this->processAttachments($attachments);
