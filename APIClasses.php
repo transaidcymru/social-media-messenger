@@ -199,7 +199,10 @@ class InstagramAPI extends SocialLinkAPI {
 
             if ($time <= $since)
                 break;
+            error_log("--------------------------------------------------------------------------------");
 
+            error_log($message->attachments);
+            error_log("--------------------------------------------------------------------------------");
             array_push($messages, new SocialMediaMessage(
                 $id,
                 $time,
