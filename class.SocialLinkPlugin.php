@@ -119,7 +119,7 @@ class SocialLinkPlugin extends Plugin
     {
         $string = join(array_map(fn ($m) => $m->encode(),$messages));
         // TODO: as far as i can tell this is sufficient for a successful post. will find out.
-        $attachments = array_merge(array_map(fn ($m) => $m->attachments, $messages));
+        $attachments = array_merge(...array_map(fn ($m) => $m->attachments, $messages));
         print_r($attachments);
         $ticket->postMessage(
             array(
@@ -137,7 +137,7 @@ class SocialLinkPlugin extends Plugin
         array $messages,
         SocialLinkDB\Platform $platform)
     {
-        $attachments = array_merge(array_map(fn ($m) => $m->attachments, $messages));
+        $attachments = array_merge(...array_map(fn ($m) => $m->attachments, $messages));
         $ticket_entry = array(
             "source" => "API",
             "source_extra" => $platform->name,

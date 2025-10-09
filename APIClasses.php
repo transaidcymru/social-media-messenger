@@ -121,8 +121,7 @@ class SocialMediaMessage {
             $this->attachments[$file['key']] = array(
                 "id" => $af->getId(),
                 "inline" => $inline,
-                "file" => $af,
-                "name" => "HELLO");
+                "file" => $af);
             if ($inline)
                 array_push($this->inlineImageIds, $file['key']);
         }
