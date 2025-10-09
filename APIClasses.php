@@ -69,12 +69,36 @@ class SocialMediaMessage {
     public string $id;
     public int $time;
 
-    function __construct(string $id, int $time, string $content, array $attachments)
+    function __construct(string $id, int $time, string $content, array|null $attachments)
     {
         $this->id = $id;
         $this->time = $time;
         $this->content = $content;
-        $this->attachments = $attachments;
+        if ($attachments !== null)
+            $this->processAttachments($attachments);
+    }
+
+    private function processAttachments(array $attachments)
+    {
+        foreach ($attachments as $attachment)
+        {
+            $context = stream_context_create([
+                "http" => [
+                    "method" => "GET",
+                    "header" => "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:143.0) Gecko/20100101 Firefox/143.0"
+                ]
+            ]);
+            $data = file_get_contents(
+                $attachment->image_data->url,
+                false,
+                $context
+            );
+            error_log("\n\n");
+            error_log("BEGIN IMAGE");
+            error_log($data);
+            error_log(base64_encode($data));
+            error_log("\n\n");
+        }
     }
 
     public function encode()
@@ -162,27 +186,9 @@ class InstagramAPI extends SocialLinkAPI {
                 $id,
                 $time,
                 $message->message,
-                $message->attachments->data
+                $message->attachments->data ?? null
             ));
 
-            if ($message->attachments->data !== null && $message->attachments->data[0] !== null){
-                $context = stream_context_create([
-                    "http" => [
-                        "method" => "GET",
-                        "header" => "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:143.0) Gecko/20100101 Firefox/143.0"
-                    ]
-                ]);
-                $data = file_get_contents(
-                    $message->attachments->data[0]->image_data->url,
-                    false,
-                    $context
-                );
-                error_log("\n\n");
-                error_log("BEGIN IMAGE");
-                error_log($data);
-                error_log(base64_encode($data));
-                error_log("\n\n");
-            }
         }
 
         return array_reverse($messages);
