@@ -116,11 +116,12 @@ class SocialMediaMessage {
             ]);
             
             error_log(print_r(array_keys((array)$attachment), true));
+
             $mediaType = InstagramMediaType::from(array_keys((array)$attachment)[0]);
-            
+            $url = ((array)$attachment)[$mediaType->value]->url;
 
             $data = file_get_contents(
-                $attachment[$mediaType->value]->url,
+                $url,
                 false,
                 $context
             );
@@ -133,7 +134,7 @@ class SocialMediaMessage {
             $mime = $file_info->buffer($data);
             $file = array(
                 "type" => $mime,
-                "name" => md5($attachment[$mediaType->value]->url),
+                "name" => md5($url),
                 "data" => $data 
             );
             $af = AttachmentFile::create($file);
