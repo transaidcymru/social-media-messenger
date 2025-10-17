@@ -138,7 +138,7 @@ class SocialMediaMessage {
                 "data" => $data 
             );
             $af = AttachmentFile::create($file);
-            $inline = $mime === "image/jpeg";
+            $inline = str_starts_with($mime, "image/");
             error_log("~~~~~~~~~~~~~~~~~~~~~~~~~~HI TRIN~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
             error_log(print_r($af->getId(), true));
             error_log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
