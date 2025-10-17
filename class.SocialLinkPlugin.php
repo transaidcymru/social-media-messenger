@@ -141,8 +141,8 @@ class SocialLinkPlugin extends Plugin
         $ticket_entry = array(
             "source" => "API",
             "source_extra" => $platform->name,
-            "email" => "$conversation->username@transaid.cymru",
-            "name" => "$conversation->display_name",
+            "email" => "$conversation->username@void.void",
+            "name" => "$conversation->username",
             "subject" => $platform->name." ticket from ".$conversation->username,
             "message" => join(array_map(fn ($m) => $m->encode(),$messages)),
             "attachments" => $attachments,

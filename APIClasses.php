@@ -52,21 +52,18 @@ class SocialMediaConversation {
     public string $id;
     public string $user_id;
     public string $username;
-    public string $display_name;
     public int $updated_time;
 
     function __construct(
         string $id,
         string $user_id,
         string $username,
-        string $display_name,
         int $updated_time)
     {
         $this->id = $id;
         $this->updated_time = $updated_time;
         $this->user_id = $user_id;
         $this->username = $username;
-        $this->display_name = $display_name;
     }
 }
 
@@ -217,23 +214,12 @@ class InstagramAPI extends SocialLinkAPI {
             if (count($conversation->participants->data) !== 2)
                 continue;
 
-            $user_id = $conversation->participants->data[1]->id;
-
-            $participant_req = json_decode($this->get_request(
-                self::BASE_URL."/$user_id",
-                $this->headers,
-                array("fields" => "name")
-            ));
-
-            error_log(print_r($participant_req, true));
-
             array_push(
                 $ret,
                 new SocialMediaConversation(
                     $conversation->id,
                     $conversation->participants->data[1]->id,
                     $conversation->participants->data[1]->username,
-                    $participant_req->name,
                     strtotime($conversation->updated_time)));
         }
 

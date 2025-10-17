@@ -23,7 +23,7 @@ r0 = requests.get("https://graph.instagram.com/v23.0/me/conversations",
 response = r0.json()
 convo = response["data"][0]["id"]
 
-poopypoo = response["data"][0]["participants"]["data"][0]["id"]
+poopypoo = response["data"][0]["participants"]["data"][1]["id"]
 
 rhalf = requests.get(f"https://graph.instagram.com/v23.0/{poopypoo}",
                      headers=headers, params={"fields": "name"})
