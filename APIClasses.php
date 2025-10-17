@@ -160,7 +160,7 @@ class SocialMediaMessage {
     {
         $time_formatted = Format::datetime("Y-m-d H:i:s", $this->time);
         $imageString = join(array_map(fn ($m) => 
-            "<details><summary>Image Attachment</summary><figure><img src='cid:$m' data-image='$m' alt='image'/></figure></details>",
+            "<details><summary><a href='javascript:void(0)'>Image Attachment</a></summary><figure><img src='cid:$m' data-image='$m' alt='image'/></figure></details>",
             $this->inlineImageIds));
 
         $content = $imageString . $this->content;
