@@ -138,10 +138,11 @@ class SocialLinkPlugin extends Plugin
         SocialLinkDB\Platform $platform)
     {
         $attachments = array_merge(...array_map(fn ($m) => $m->attachments, $messages));
+        $email = "$conversation->id@$platform->name.void";
         $ticket_entry = array(
             "source" => "API",
             "source_extra" => $platform->name,
-            "email" => "$conversation->username@void.void",
+            "email" => $email,
             "name" => "$conversation->username",
             "subject" => $platform->name." ticket from ".$conversation->username,
             "message" => join(array_map(fn ($m) => $m->encode(),$messages)),
@@ -149,6 +150,11 @@ class SocialLinkPlugin extends Plugin
             "type" => "text/html"
             );
         $errors = array();
+
+        User::fromVars(array(
+            "name" => $conversation->username,
+            "email" => $email), true, true);
+
         $ticket = Ticket::create($ticket_entry, $errors, $ticket_entry["source"]);
         error_log(print_r($errors, true));
 
