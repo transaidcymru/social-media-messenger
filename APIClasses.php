@@ -225,6 +225,8 @@ class InstagramAPI extends SocialLinkAPI {
                 array("fields" => "name")
             ));
 
+            error_log(print_r($participant_req, true));
+
             array_push(
                 $ret,
                 new SocialMediaConversation(
