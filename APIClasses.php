@@ -63,6 +63,24 @@ class SocialMediaConversation {
     }
 }
 
+
+enum InstagramMediaType: string {
+    case Image = "image_data";
+    case Video = "video_data";
+
+    // https://stackoverflow.com/questions/71002391/get-enum-value-by-name-stored-in-a-string-in-php
+    static function fromName(string $name): InstagramMediaType
+    {
+        foreach (self::cases() as $status) {
+            if( $name === $status->name ){
+                return $status;
+            }
+        }
+        throw new \ValueError("$name is not a valid backing value for enum " . self::class );
+    }
+}
+
+
 class SocialMediaMessage {
     public string $content;
     public array $attachments;
@@ -87,6 +105,7 @@ class SocialMediaMessage {
 
     private function processAttachments(array $attachments)
     {
+        // this might need to move: it's too instagram specific.
         foreach ($attachments as $attachment)
         {
             $context = stream_context_create([
@@ -95,8 +114,12 @@ class SocialMediaMessage {
                     "header" => "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:143.0) Gecko/20100101 Firefox/143.0"
                 ]
             ]);
+            
+            $mediaType = new InstagramMediaType(array_keys($attachment)[0]);
+            
+
             $data = file_get_contents(
-                $attachment->image_data->url,
+                $attachment[$mediaType]->url,
                 false,
                 $context
             );
@@ -109,7 +132,7 @@ class SocialMediaMessage {
             $mime = $file_info->buffer($data);
             $file = array(
                 "type" => $mime,
-                "name" => md5($attachment->image_data->url),
+                "name" => md5($attachment[$mediaType]->url),
                 "data" => $data 
             );
             $af = AttachmentFile::create($file);
