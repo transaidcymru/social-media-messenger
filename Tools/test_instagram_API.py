@@ -17,14 +17,22 @@ params = {
 }
 
 r0 = requests.get("https://graph.instagram.com/v23.0/me/conversations",
-             headers=headers, params={"fields": "updated_time"})
+             headers=headers, params={"fields": "updated_time,participants"})
 
 
 response = r0.json()
 convo = response["data"][0]["id"]
 
+poopypoo = response["data"][0]["participants"]["data"][0]["id"]
+
+rhalf = requests.get(f"https://graph.instagram.com/v23.0/{poopypoo}",
+                     headers=headers, params={"fields": "name"})
+
+pp(rhalf.json()["name"])
+exit()
+
 r1 = requests.get(f"https://graph.instagram.com/v23.0/{convo}/messages",
-             headers=headers, params={"fields": "id,created_time,from,to,message"})
+             headers=headers, params={"fields": "id,created_time,from,to,message,attachments"})
 
 jay_somme = r1.json()
 print(response["data"][0])

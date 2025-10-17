@@ -52,14 +52,21 @@ class SocialMediaConversation {
     public string $id;
     public string $user_id;
     public string $username;
+    public string $display_name;
     public int $updated_time;
 
-    function __construct(string $id, string $user_id, string $username, int $updated_time)
+    function __construct(
+        string $id,
+        string $user_id,
+        string $username,
+        string $display_name,
+        int $updated_time)
     {
         $this->id = $id;
         $this->updated_time = $updated_time;
         $this->user_id = $user_id;
         $this->username = $username;
+        $this->display_name = $display_name;
     }
 }
 
@@ -160,7 +167,7 @@ class SocialMediaMessage {
             $this->inlineImageIds));
 
         $content = $imageString . $this->content;
-        $messageText = strlen($content) > 0 ? $content : "🏳️‍⚧️🏴󠁧󠁢󠁷󠁬󠁳󠁿 Message format not Supported 🏴󠁧󠁢󠁷󠁬󠁳󠁿🏳️‍⚧️";
+        $messageText = strlen($content) > 0 ? $content : "🏳️‍⚧️ Message format not Supported 🏳️‍⚧️";
 
         return "<div style='margin: 1em;'> <div style='font-size: smaller'>$time_formatted</div> <div style='background-image:linear-gradient(0deg, #5BCEFA 0%, #5BCEFA 20%, #F5A9B8 20%, #F5A9B8 40%, #ffffff 40%, #ffffff 60%, #F5A9B8 60%, #F5A9B8 80%, #5BCEFA 80%, #5BCEFA 100%); width: fit-content;padding:0.5em; border-radius:1em 1em 1em 0em;'><div style='padding:0.5em;background-color:white; border-radius:0.5em 0.5em 0.5em 0em'>$messageText</div></div></div>";
     }
@@ -208,7 +215,15 @@ class InstagramAPI extends SocialLinkAPI {
             // if it's 1, you're talking to yourself.
             // if it's >2 you're in a group chat. we should think about what to do then.
             if (count($conversation->participants->data) !== 2)
-                continue;               
+                continue;
+
+            $user_id = $conversation->participants->data[1]->id;
+
+            $participant_req = json_decode($this->get_request(
+                self::BASE_URL."/$user_id",
+                $this->headers,
+                array("fields" => "name")
+            ));
 
             array_push(
                 $ret,
@@ -216,6 +231,7 @@ class InstagramAPI extends SocialLinkAPI {
                     $conversation->id,
                     $conversation->participants->data[1]->id,
                     $conversation->participants->data[1]->username,
+                    $participant_req->name,
                     strtotime($conversation->updated_time)));
         }
 
