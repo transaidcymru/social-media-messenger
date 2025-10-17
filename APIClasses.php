@@ -160,7 +160,7 @@ class SocialMediaMessage {
             $this->inlineImageIds));
 
         $content = $imageString . $this->content;
-        $messageText = strlen($content) > 0 ? $content : "<i>Message format not Supported</i>";
+        $messageText = strlen($content) > 0 ? $content : "<carousel> 🚅🚃🏳️‍⚧️🏳️‍⚧️🏳️‍⚧️🏳️‍⚧️🏳️‍⚧️🏳️‍⚧️🏳️‍⚧️ Message format not Supported 🏳️‍⚧️🏳️‍⚧️🏳️‍⚧️🏳️‍⚧️🏳️‍⚧️🏳️‍⚧️🚃</carousel>";
 
         return "<div style='margin: 1em;'> <div style='font-size: smaller'>$time_formatted</div> <div style='background-image:linear-gradient(0deg, #5BCEFA 0%, #5BCEFA 20%, #F5A9B8 20%, #F5A9B8 40%, #ffffff 40%, #ffffff 60%, #F5A9B8 60%, #F5A9B8 80%, #5BCEFA 80%, #5BCEFA 100%); width: fit-content;padding:0.5em; border-radius:1em 1em 1em 0em;'><div style='padding:0.5em;background-color:white; border-radius:0.5em 0.5em 0.5em 0em'>$messageText</div></div></div>";
     }
