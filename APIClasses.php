@@ -120,7 +120,7 @@ class SocialMediaMessage {
             
 
             $data = file_get_contents(
-                $attachment[$mediaType]->url,
+                $attachment[$mediaType->value]->url,
                 false,
                 $context
             );
@@ -133,7 +133,7 @@ class SocialMediaMessage {
             $mime = $file_info->buffer($data);
             $file = array(
                 "type" => $mime,
-                "name" => md5($attachment[$mediaType]->url),
+                "name" => md5($attachment[$mediaType->value]->url),
                 "data" => $data 
             );
             $af = AttachmentFile::create($file);
