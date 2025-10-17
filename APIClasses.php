@@ -115,6 +115,7 @@ class SocialMediaMessage {
                 ]
             ]);
             
+            error_log(print_r(array_keys($attachment), true));
             $mediaType = new InstagramMediaType(array_keys($attachment)[0]);
             
 
