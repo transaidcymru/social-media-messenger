@@ -7,16 +7,22 @@ class SocialLinkPluginConfig extends PluginConfig {
         return [
             'instagram-api-key' => new TextboxField([
                 'default' => '',
-                'label' => 'Instagram API Key',
-                'hint' => 'API key for instagram API.',
+                'label' => 'Instagram Access Token (API Key)',
+                'hint' => 'API key for Instagram.',
                 'configuration' => array(
                     'size'   => 500,
                     'length' => 200
                 ),
             ]),
-            'instagram-verify-token' => new TextboxField([
+            'instagram-refresh-access-token' => new TextboxField([
+                'default' => '50', // Instagram access token expiry is 60 days at time of writing, min days passed = 1
+                'label' => 'Instagram Access Token Refresh Interval',
+                'hint' => 'The number of days before refreshing the token automatically on Instagram sync.',
+                'configuration'=>array('validator'=>'number', 'size'=>2)
+            ]),
+            'instagram-verify-webhook-token' => new TextboxField([
                 'default' => '',
-                'label' => 'Instagram API Webhook Key',
+                'label' => 'Instagram API Webhook Verify Token',
                 'hint' => 'Webhook secret set in admin settings to verify webhook requests.',
             ]),
             // TODO: datetime field
@@ -26,10 +32,10 @@ class SocialLinkPluginConfig extends PluginConfig {
                 'hint' => 'Unix time to scrape messages since',
             ]),
             'min-sync-interval' => new TextboxField(array(
-                'label' => 'Minimum Interval Between Sync (s)',
+                'label' => 'Minimum Interval Between Sync (seconds)',
                 'hint'=>'Fewest digits allowed in a valid phone number',
                 'configuration'=>array('validator'=>'number'),
-            )),
+            ))
         ];
     }
 

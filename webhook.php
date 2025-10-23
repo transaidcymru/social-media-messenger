@@ -6,10 +6,9 @@ require_once 'class.SocialLinkPlugin.php';
 $nothing = array();
 
 $config = SocialLinkPlugin::getConfigStatic();
-$verify_token = $config->get("instagram-verify-token");
+$verify_token = $config->get("instagram-verify-webhook-token");
 
 $body = json_decode(file_get_contents("php://input"));
-error_log(print_r($body, true));
 
 $hub_verify_token = $_GET["hub_verify_token"];
 $hub_challenge = $_GET["hub_challenge"];
@@ -24,10 +23,18 @@ if ($result === 0)
         "hub_challenge" => $hub_challenge,
         "hub_verify_token" => $hub_verify_token
     ];
-    Signal::send('smm.instagram-webhook', null,
-        $data);
     echo $hub_challenge;
 }
 else
+{
     echo "invalid verify token";
+}
+
+if (false) {
+    Signal::send('smm.instagram-webhook', null, null);
+}
+
+error_log("----- WEBHOOK TAP -----");
+error_log(print_r(basename($_SERVER['REQUEST_URI'])));
+error_log(print_r($body));
 
