@@ -59,9 +59,8 @@ class SocialLinkPlugin extends Plugin
             self::$config_static = $this->getConfig();
 
             Signal::connect('threadentry.created', array($this, 'onNewEntry'));
-            Signal::connect('cron', array($this, 'sync'));
-            Signal::connect('smm.instagram-webhook', array($this, 'instagramWebhook'));
-            Signal::connect('smm.sync', array($this, 'sync'));
+            Signal::connect('cron', callable: array($this, 'requestSync'));
+            Signal::connect('smm.instagram-webhook', array($this, 'requestSync'));
             $error = null;
             SocialLinkDB\initTable($error);
             if ($error !== null)
@@ -243,7 +242,7 @@ class SocialLinkPlugin extends Plugin
 
     }
 
-    public function instagramWebhook($object, $data)
+    public function requestSync($object, $data)
     {
         $last_sync = (int)self::$config_static->get("last_sync");
         $min_interval = (int)self::$config_static->get("min-sync-interval");
