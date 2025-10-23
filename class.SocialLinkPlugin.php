@@ -32,7 +32,6 @@ class SocialLinkPlugin extends Plugin
         "Instagram"
     );
     private static $config_static = null;
-    private int $last_sync = 0;
 
     // Static version of 'getConfig' - allows access to plugin config
     // when $this isn't available (i.e. in endpoint.). Plugin isn't 
@@ -256,7 +255,14 @@ class SocialLinkPlugin extends Plugin
     {
         // process webhook.
         error_log(print_r($data, true));
-        $this->sync($object, $data);
+        $last_sync = (int)self::$config_static->get("last_sync");
+        $min_interval = (int)self::$config_static->get("min-sync-interval");
+        $now = (int)Misc::dbtime();
+        if ($now - $last_sync > $min_interval)
+        {
+            self::$config_static->set("last_sync", $now);
+            $this->sync($object, $data);
+        }
     }
 
 
