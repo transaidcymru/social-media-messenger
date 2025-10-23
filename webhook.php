@@ -16,7 +16,7 @@ $hub_mode = $_GET["hub_mode"];
 
 $result = strcmp($hub_verify_token, $verify_token);
 
-if ($result === 0)
+if ($result === 0 && $hub_verify_token !== null && $hub_verify_token !== "")
 {
     $data = [
         "hub_mode" => $hub_mode,
