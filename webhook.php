@@ -25,11 +25,12 @@ if ($result === 0 && $hub_verify_token !== null && $hub_verify_token !== "")
     ];
     echo $hub_challenge;
 }
-else
-{
-    echo "invalid verify token";
-}
 
 if (strcmp($body->object, "instagram") === 0) {
     Signal::send('smm.instagram-webhook', null, $body);
 }
+
+error_log("----- WEBHOOK TAP -----");
+error_log(print_r(basename($_SERVER['REQUEST_URI']), true));
+error_log(print_r($body, true));
+
