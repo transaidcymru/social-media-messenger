@@ -260,6 +260,11 @@ class SocialLinkPlugin extends Plugin
         $now = (int)Misc::dbtime();
         if ($now - $last_sync > $min_interval)
         {
+            error_log("------------ HELLO TRIN!!!!!! --------------------------------------------------");
+            error_log(print_r($last_sync));
+            error_log(print_r($min_interval));
+            error_log(print_r($now));
+            error_log("--------------------------------------------------------------------------------");
             self::$config_static->set("last_sync", $now);
             $this->sync($object, $data);
         }
