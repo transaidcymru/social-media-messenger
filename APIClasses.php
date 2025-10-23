@@ -99,10 +99,8 @@ class SocialMediaMessage {
         $this->content = $content;
         $this->inlineImageIds = array();
         $this->attachments = array();
-        error_log(print_r($attachments, true));
         if ($attachments)
         {
-            error_log("here!");
             $this->processAttachments($attachments);
         }
     }
@@ -119,7 +117,6 @@ class SocialMediaMessage {
                 ]
             ]);
             
-            error_log(print_r(array_keys((array)$attachment), true));
 
             $mediaType = InstagramMediaType::from(array_keys((array)$attachment)[0]);
             $url = ((array)$attachment)[$mediaType->value]->url;
@@ -129,11 +126,6 @@ class SocialMediaMessage {
                 false,
                 $context
             );
-            error_log("\n\n");
-            error_log("BEGIN IMAGE");
-            error_log($data);
-            error_log(base64_encode($data));
-            error_log("\n\n");
             $file_info = new finfo(FILEINFO_MIME_TYPE);
             $mime = $file_info->buffer($data);
             $file = array(
@@ -143,9 +135,6 @@ class SocialMediaMessage {
             );
             $af = AttachmentFile::create($file);
             $inline = str_starts_with($mime, "image/");
-            error_log("~~~~~~~~~~~~~~~~~~~~~~~~~~HI TRIN~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-            error_log(print_r($af->getId(), true));
-            error_log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
             $this->attachments[$file['key']] = array(
                 "id" => $af->getId(),
@@ -185,7 +174,7 @@ class InstagramAPI extends SocialLinkAPI {
             ];
             $this->my_id = $this->getOwnID();
         } catch(Exception $e) {
-            error_log("shopp");
+            error_log("failed to construct instagram api");
         }
         
     }
@@ -195,7 +184,6 @@ class InstagramAPI extends SocialLinkAPI {
             self::BASE_URL."/me",
             $this->headers,
             array("fields" => "id")));
-        error_log(print_r($me_request, true));
         return $me_request->id;
     }
 
@@ -233,7 +221,6 @@ class InstagramAPI extends SocialLinkAPI {
             array("fields" => "created_time,from,message,attachments", "limit" => "20")
         ));
 
-        error_log(print_r($conversation_req, true));
         $messages = array();
         foreach ($conversation_req->data as $message)
         {
@@ -242,10 +229,6 @@ class InstagramAPI extends SocialLinkAPI {
 
             if ($time <= $since)
                 break;
-            error_log("--------------------------------------------------------------------------------");
-
-            error_log(print_r($message->attachments->data, true));
-            error_log("--------------------------------------------------------------------------------");
             array_push($messages, new SocialMediaMessage(
                 $id,
                 $time,

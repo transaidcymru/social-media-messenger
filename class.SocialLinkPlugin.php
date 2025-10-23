@@ -71,7 +71,7 @@ class SocialLinkPlugin extends Plugin
             }
 
         } catch (Exception $e) {
-            error_log($e->getMessage());
+            $this->log($e->getMessage());
         }
 
     }
@@ -80,13 +80,12 @@ class SocialLinkPlugin extends Plugin
     // Called by threadentry.created signal. 
     public function onNewEntry($entry)
     {
-        error_log("creating new thread entry...");
 
         // Get associated ticket
         $ticketId = $entry->getThreadId();
 
         if ($ticketId === null){
-            error_log("SCREAMING");
+            $this->log("SCREAMING");
             return;
         }
 
@@ -94,13 +93,11 @@ class SocialLinkPlugin extends Plugin
         $session = SocialLinkDB\getSocialSessionFromTicketId($ticketId, $error);
         if ($session === null) {
             // early out
-            error_log("it broke :( Error: ".$error);
+            $this->log("it broke :( Error: ".$error);
             return;
         }
         
         if ($entry->getTypeName() === 'response'){
-            error_log("thread entry type is response...");
-
             $api_key = self::$config_static->get("instagram-api-key");
             $api = new InstagramAPI($api_key);
 
@@ -108,7 +105,6 @@ class SocialLinkPlugin extends Plugin
             $created_time = $api->sendMessage($session->chat_id, strip_tags($entry->getBody()), $error);
 
             if ($error === null){
-                error_log("updating end time!!!!");
 
                 SocialLinkDB\updateEndTime($session, strtotime($created_time));
             }
@@ -156,7 +152,6 @@ class SocialLinkPlugin extends Plugin
             "email" => $email), true, true);
 
         $ticket = Ticket::create($ticket_entry, $errors, $ticket_entry["source"]);
-        error_log(print_r($errors, true));
 
         SocialLinkDB\insertSocialSession(new SocialLinkDB\SocialSession(
             $ticket->getId(),
@@ -193,7 +188,6 @@ class SocialLinkPlugin extends Plugin
         // TODO: do this for each platform.
         
         $api_key = self::$config_static->get("instagram-api-key");
-        error_log(print_r($api_key, true));
 
         $api = new InstagramAPI($api_key);
         $zero_hour = self::$config_static->get("zero-hour");
@@ -229,7 +223,6 @@ class SocialLinkPlugin extends Plugin
 
             // more short circuiting. This triggers if we found the session but it's up to date.
             //
-            error_log("update_time: $conversation->updated_time, most_recent_session: $most_recent_session->timestamp_end");
             if (!$first_session &&
                 $conversation->updated_time <= $most_recent_session->timestamp_end)
             {
@@ -241,7 +234,6 @@ class SocialLinkPlugin extends Plugin
             $update_since = $first_session ? $zero_hour : $most_recent_session->timestamp_end;
 
             $messages = $api->getMessages($conversation->id, $update_since);
-            error_log(print_r($messages, true));
 
             if($new_session)
                 $this->newSession($conversation, $messages, SocialLinkDB\Platform::Instagram);
@@ -253,18 +245,11 @@ class SocialLinkPlugin extends Plugin
 
     public function instagramWebhook($object, $data)
     {
-        // process webhook.
-        error_log(print_r($data, true));
         $last_sync = (int)self::$config_static->get("last_sync");
         $min_interval = (int)self::$config_static->get("min-sync-interval");
         $now = (int)Misc::dbtime();
         if ($now - $last_sync > $min_interval)
         {
-            error_log("------------ HELLO TRIN!!!!!! --------------------------------------------------");
-            error_log(print_r($last_sync));
-            error_log(print_r($min_interval));
-            error_log(print_r($now));
-            error_log("--------------------------------------------------------------------------------");
             self::$config_static->set("last_sync", $now);
             $this->sync($object, $data);
         }
@@ -303,9 +288,6 @@ class SocialLinkPlugin extends Plugin
             $tickets_view = false;
         }
 
-        if (true) {
-            error_log("Matched $url as ".($tickets_view ? 'ticket' : 'not ticket'));
-        }
 
         return $tickets_view;
     }
