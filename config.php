@@ -32,6 +32,7 @@ class SocialLinkPluginConfig extends PluginConfig {
                 'hint' => 'Unix time to scrape messages since',
             ]),
             'min-sync-interval' => new TextboxField(array(
+                'default' => '30',
                 'label' => 'Minimum Interval Between Sync (seconds)',
                 'hint'=>'Fewest digits allowed in a valid phone number',
                 'configuration'=>array('validator'=>'number'),
