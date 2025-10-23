@@ -147,7 +147,7 @@ class SocialMediaMessage {
 
     public function encode()
     {
-        $time_formatted = Format::datetime("Y-m-d H:m:s", $this->time);
+        $time_formatted = Format::datetime($this->time);
         $imageString = join(array_map(fn ($m) => 
             "<details><summary style='cursor:pointer;text-decoration:underline;color:#5BCEFA'>Image Attachment</summary><figure><img src='cid:$m' data-image='$m' alt='image'/></figure></details>",
             $this->inlineImageIds));
