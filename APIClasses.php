@@ -182,6 +182,19 @@ class InstagramAPI extends SocialLinkAPI {
         
     }
 
+    // abstract into base class
+    public function refreshAccessToken(&$error=null) {
+        $request = json_decode(
+            $this->get_request(
+                self::BASE_URL."/refresh_access_token",
+                $this->headers,
+                array("grant_type" => "ig_refresh_token",
+                    "access_token" => $this->api_key)
+            )
+        );
+        return $request->expires_in;
+    }
+
     public function getOwnID(&$error=null): string {
         $me_request = json_decode($this->get_request(
             self::BASE_URL."/me",
