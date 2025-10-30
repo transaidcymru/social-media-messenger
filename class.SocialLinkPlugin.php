@@ -260,7 +260,7 @@ class SocialLinkPlugin extends Plugin
 
             $expiry = $api->refreshAccessToken();
 
-            $this->log("Instagram token refresh (last sync: $last_sync, expires in: $expiry)");
+            error_log("Instagram token refresh (last sync: $last_sync, expires in: $expiry)");
         }
     }
 
