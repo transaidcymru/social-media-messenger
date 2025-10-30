@@ -245,13 +245,11 @@ class SocialLinkPlugin extends Plugin
 
     public function requestTokenRefresh($object, $data)
     {
-        error_log("Checking token refresh interval on cron...");
         $last_sync = (int)self::$config_static->get("ig_last_token_refresh");
         $min_interval_days = (int)self::$config_static->get("instagram-refresh-access-token");
         $now = (int)Misc::dbtime();
         $nowDays = (int)($now / (60 * 60 * 24));
         $lastSyncDays = (int)($last_sync / (60 * 60 * 24));
-        error_log("Checking token refresh interval on cron...");
         if ($now - $last_sync > $min_interval_days * 24 * 60 * 60)
         {
             self::$config_static->set("ig_last_token_refresh", $now);
