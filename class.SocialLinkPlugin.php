@@ -250,6 +250,7 @@ class SocialLinkPlugin extends Plugin
         $now = (int)Misc::dbtime();
         $nowDays = (int)($now / (60 * 60 * 24));
         $lastSyncDays = (int)($last_sync / (60 * 60 * 24));
+        error_log("Checking token refresh interval on cron...");
         if ($nowDays - $lastSyncDays > $min_interval_days)
         {
             self::$config_static->set("ig_last_token_refresh", $now);
