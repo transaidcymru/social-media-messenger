@@ -60,7 +60,7 @@ class SocialLinkPlugin extends Plugin
 
             Signal::connect('threadentry.created', array($this, 'onNewEntry'));
             Signal::connect('cron', callable: array($this, 'requestSync'));
-            Signal::connect('cron', callable: array($this, 'requestTokenRefresh'));
+            Signal::connect(signal: 'cron', callable: array($this, 'requestTokenRefresh'));
             Signal::connect('smm.instagram-webhook', array($this, 'requestSync'));
             $error = null;
             SocialLinkDB\initTable($error);
@@ -245,12 +245,12 @@ class SocialLinkPlugin extends Plugin
 
     public function requestTokenRefresh($object, $data)
     {
+        error_log("Checking token refresh interval on cron...");
         $last_sync = (int)self::$config_static->get("ig_last_token_refresh");
         $min_interval_days = (int)self::$config_static->get("instagram-refresh-access-token");
         $now = (int)Misc::dbtime();
         $nowDays = (int)($now / (60 * 60 * 24));
-        $lastSyncDays = (int)($last_sync / (60 * 60 * 24));
-        error_log("Checking token refresh interval on cron...");
+        $lastSyncDays = (int)($last_sync / (60 * 60 * 24));;
         if ($nowDays - $lastSyncDays > $min_interval_days)
         {
             self::$config_static->set("ig_last_token_refresh", $now);
