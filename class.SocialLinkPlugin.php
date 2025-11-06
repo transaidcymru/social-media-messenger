@@ -65,7 +65,7 @@ class SocialLinkPlugin extends Plugin
             SocialLinkDB\initTable($error);
             if ($error !== null)
             {
-                $this->debug_log("Database initialisation failed: $error");
+                error_log("Database initialisation failed: $error");
                 return;
             }
 
