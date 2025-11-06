@@ -249,16 +249,12 @@ class SocialLinkPlugin extends Plugin
 
     public function requestTokenRefresh($object, $data)
     {
-        print_r("bongle");
         $last_sync = (int)self::$config_static->get("ig_last_token_refresh");
         $min_interval_days = (int)self::$config_static->get("instagram-refresh-access-token");
         $now = (int)Misc::dbtime();
         $nowDays = (int)($now / (60 * 60 * 24));
         $lastSyncDays = (int)($last_sync / (60 * 60 * 24));
-        $tmp = ($now - $last_sync) > ($min_interval_days * 24 * 60 * 60);
-        print_r("now: $now, last_sync: $last_sync, min_interval_days: $min_interval_days");
-        print_r($tmp);
-        if ($tmp)
+        if (($now - $last_sync) > ($min_interval_days * 24 * 60 * 60))
         {
             self::$config_static->set("ig_last_token_refresh", $now);
 
@@ -267,7 +263,7 @@ class SocialLinkPlugin extends Plugin
 
             $expiry = $api->refreshAccessToken();
 
-            error_log("Instagram token refresh (last sync: $last_sync, expires in: $expiry)");
+            print_r("Instagram token refresh (last sync: $last_sync, expires in: $expiry)\n");
         }
     }
 
