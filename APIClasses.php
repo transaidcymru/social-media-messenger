@@ -250,6 +250,8 @@ class InstagramAPI extends SocialLinkAPI {
 
             if ($time <= $since)
                 break;
+            error_log(print_r($message));
+            error_log(print_r($this->my_id));
             array_push($messages, new SocialMediaMessage(
                 $id,
                 $time,
