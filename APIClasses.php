@@ -255,7 +255,7 @@ class InstagramAPI extends SocialLinkAPI {
                 $time,
                 $message->message,
                 $message->attachments->data ?? array(),
-                $message->message->from->id !== $this->my_id
+                $message->from->id !== $this->my_id
             ));
 
         }

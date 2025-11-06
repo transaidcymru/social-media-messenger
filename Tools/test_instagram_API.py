@@ -29,7 +29,6 @@ rhalf = requests.get(f"https://graph.instagram.com/v23.0/{poopypoo}",
                      headers=headers, params={"fields": "name"})
 
 pp(rhalf.json()["name"])
-exit()
 
 r1 = requests.get(f"https://graph.instagram.com/v23.0/{convo}/messages",
              headers=headers, params={"fields": "id,created_time,from,to,message,attachments"})
