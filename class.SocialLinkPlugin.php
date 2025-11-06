@@ -365,7 +365,7 @@ class SocialLinkPlugin extends Plugin
             $text = $format;
         }
 
-        if (!$ost instanceof osTicket) {
+        if (!($ost instanceof osTicket)) {
             // doh, can't log to the admin log without this object
             // setup a callback to do the logging afterwards:
             // save the log message in memory for now
