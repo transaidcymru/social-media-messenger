@@ -245,6 +245,7 @@ class SocialLinkPlugin extends Plugin
 
     public function requestTokenRefresh($object, $data)
     {
+        print_r("bongle");
         $last_sync = (int)self::$config_static->get("ig_last_token_refresh");
         $min_interval_days = (int)self::$config_static->get("instagram-refresh-access-token");
         $now = (int)Misc::dbtime();
