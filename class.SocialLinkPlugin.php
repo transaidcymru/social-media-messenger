@@ -70,7 +70,7 @@ class SocialLinkPlugin extends Plugin
             }
 
         } catch (Exception $e) {
-            $this->log($e->getMessage());
+            error_log(print_r($e, true)));
         }
 
     }
