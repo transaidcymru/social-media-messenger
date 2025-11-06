@@ -91,14 +91,16 @@ class SocialMediaMessage {
     public string $id;
     public int $time;
     private array $inlineImageIds;
+    public bool $from_client;
 
-    function __construct(string $id, int $time, string $content, array $attachments)
+    function __construct(string $id, int $time, string $content, array $attachments, bool $from_client)
     {
         $this->id = $id;
         $this->time = $time;
         $this->content = $content;
         $this->inlineImageIds = array();
         $this->attachments = array();
+        $this->from_client = $from_client;
         if ($attachments)
         {
             $this->processAttachments($attachments);
@@ -158,7 +160,10 @@ class SocialMediaMessage {
         error_log("---- TIME FORMATTED:");
         error_log(print_r($time_formatted, true));
         error_log(print_r($this->time, true));
-        return "<div style='margin: 1em;'> <div style='font-size: smaller'>$time_formatted</div> <div style='background-image:linear-gradient(0deg, #5BCEFA 0%, #5BCEFA 20%, #F5A9B8 20%, #F5A9B8 40%, #ffffff 40%, #ffffff 60%, #F5A9B8 60%, #F5A9B8 80%, #5BCEFA 80%, #5BCEFA 100%); width: fit-content;padding:0.5em; border-radius:1em 1em 1em 0em;'><div style='padding:0.5em;background-color:white; border-radius:0.5em 0.5em 0.5em 0em'>$messageText</div></div></div>";
+        $extra_style = $this->from_client ? "":"justify-content:flex-end;";
+        $outer_border = $this->from_client ? "1em 0em":"0em 1em";
+        $inner_border = $this->from_client ? "0.5em 0em":"0em 0.5em";
+        return "<div style='margin: 1em;display:flex;$extra_style'><div><div style='font-size: smaller'>$time_formatted</div> <div style='background-image:linear-gradient(0deg, #5BCEFA 0%, #5BCEFA 20%, #F5A9B8 20%, #F5A9B8 40%, #ffffff 40%, #ffffff 60%, #F5A9B8 60%, #F5A9B8 80%, #5BCEFA 80%, #5BCEFA 100%); width: fit-content;padding:0.5em; border-radius:1em 1em $outer_border;'><div style='padding:0.5em;background-color:white; border-radius:0.5em 0.5em $inner_border'>$messageText</div></div></div></div>";
     }
 }
 
@@ -249,7 +254,8 @@ class InstagramAPI extends SocialLinkAPI {
                 $id,
                 $time,
                 $message->message,
-                $message->attachments->data ?? array()
+                $message->attachments->data ?? array(),
+                $message->message->from->id !== $this->my_id
             ));
 
         }
