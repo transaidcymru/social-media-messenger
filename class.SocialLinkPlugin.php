@@ -59,8 +59,7 @@ class SocialLinkPlugin extends Plugin
             self::$config_static = $this->getConfig();
 
             Signal::connect('threadentry.created', array($this, 'onNewEntry'));
-            Signal::connect('cron', callable: array($this, 'requestSync'));
-            Signal::connect(signal: 'cron', callable: array($this, 'requestTokenRefresh'));
+            Signal::connect('cron', callable: array($this, 'cron'));
             Signal::connect('smm.instagram-webhook', array($this, 'requestSync'));
             $error = null;
             SocialLinkDB\initTable($error);
@@ -74,6 +73,11 @@ class SocialLinkPlugin extends Plugin
             $this->log($e->getMessage());
         }
 
+    }
+    public function cron($data)
+    {
+        $this->requestSync($this, $data);
+        $this->requestTokenRefresh($this, $data);
     }
 
     // Pushes osTicket updates to social media platforms.
