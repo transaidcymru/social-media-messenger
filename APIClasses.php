@@ -187,6 +187,8 @@ class InstagramAPI extends SocialLinkAPI {
             ];
             $error = null;
             $this->my_id = $this->getOwnID($error);
+            SLP_Log("weeeeeeeeeee ?");
+            error_log("pls log somehow");
             if ($error !== null) {
                 SLP_Log($error);
             }
