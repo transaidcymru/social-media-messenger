@@ -16,8 +16,12 @@ params = {
     "fields": "user_id,username"
 }
 
-r0 = requests.get("https://graph.instagram.com/v23.0/me/conversations",
-             headers=headers, params={"fields": "updated_time,participants"})
+r0 = requests.get("https://graph.instagram.com/v23.0/me",
+             headers=headers, params={"fields": "user_id,username,id"})
+
+print(r0.json())
+
+exit()
 
 
 response = r0.json()
