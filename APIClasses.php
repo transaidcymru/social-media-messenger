@@ -8,10 +8,10 @@ class SocialLinkAPI {
         return array();
     }
 
-    public function get_request(string $endpoint, array $headers, array $params=null)
+    public function get_request(string $endpoint, array $headers, array $params=array(), &$error = null)
     {
         $url = $endpoint;
-        if ($params != null)
+        if (sizeof($params) > 0)
         {
             $url = $endpoint."?".http_build_query($params);
         }
@@ -21,14 +21,17 @@ class SocialLinkAPI {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         $output = curl_exec($ch);
+        if ($output === false){
+            $error = curl_error($ch);
+        }
         curl_close($ch);
         return $output;
     }
 
-    public function post_request(string $endpoint, array $headers, string $body, array $params=null)
+    public function post_request(string $endpoint, array $headers, string $body, array $params=array(), &$error = null)
     {
         $url = $endpoint;
-        if ($params != null)
+        if (sizeof($params) > 0)
         {
             $url = $endpoint."?".http_build_query($params);
         }
@@ -39,6 +42,9 @@ class SocialLinkAPI {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         $output = curl_exec($ch);
+        if ($output === false){
+            $error = curl_error($ch);
+        }
         curl_close($ch);
         return $output;
     }
@@ -179,40 +185,61 @@ class InstagramAPI extends SocialLinkAPI {
                 "Authorization: Bearer $this->api_key",
                 "Content-Type: application/json"
             ];
-            $this->my_id = $this->getOwnID();
+            $error = null;
+            $this->my_id = $this->getOwnID($error);
+            if ($error !== null) {
+
+            }
         } catch(Exception $e) {
-            error_log("failed to construct instagram api");
+            SLP_Log("Failed to construct Instagram API");
         }
         
     }
 
+    public function getIG($url, $params=array(), &$error=null){
+        $response = $this->get_request(
+            $url,
+            $this->headers,
+            $params,
+            $error
+        );
+        if ($error !== null) {
+            return null;
+        }
+
+        $decoded = json_decode($response);
+        if ($decoded === null) {
+            $error = "Failed to decode JSON from \"".$url."\", response: ".$response;
+            return null;
+        }
+
+        if ($decoded->error !== null) {
+            $error = "Platform: Instagram. Message: ".$decoded->error->message."\nType: ".$decoded->error->type."\nCode: ".$decoded->error->code."\nSubcode: ".$decoded->error->error_subcode;
+        }
+
+        return $decoded;
+    }
+
     // abstract into base class
     public function refreshAccessToken(&$error=null) {
-        $request = json_decode(
-            $this->get_request(
-                self::BASE_URL."/refresh_access_token",
-                $this->headers,
-                array("grant_type" => "ig_refresh_token",
-                    "access_token" => $this->api_key)
-            )
+        $request = $this->getIG(
+            self::BASE_URL."/refresh_access_token",
+            array("grant_type" => "ig_refresh_token", "access_token" => $this->api_key),
+            $error
         );
         return $request->expires_in;
     }
 
-    public function getOwnID(&$error=null): string {
-        $me_request = json_decode($this->get_request(
-            self::BASE_URL."/me",
-            $this->headers,
-            array("fields" => "user_id")));
-        return $me_request->user_id;
+    public function getOwnID(&$error=null): string {        
+        return $this->getIG(self::BASE_URL."/me", array("fields" => "user_id"), $error)->user_id;
     }
 
     public function getConversations(&$error=null): array {
-        $conversations_req = json_decode($this->get_request(
+        $conversations_req = $this->getIG(
             self::BASE_URL."/me/conversations",
-            $this->headers,
-            array("fields" => "participants,updated_time")
-            ));
+            array("fields" => "participants,updated_time"),
+            $error
+        );
 
         $ret = array();
         foreach ($conversations_req->data as $conversation)
@@ -235,11 +262,10 @@ class InstagramAPI extends SocialLinkAPI {
     }
 
     public function getMessages(string $conversation_id, int $since) {
-        $conversation_req = json_decode($this->get_request(
+        $conversation_req = $this->getIG(
             self::BASE_URL."/".$conversation_id."/messages",
-            $this->headers,
             array("fields" => "created_time,from,message,attachments", "limit" => "20")
-        ));
+        );
 
         $messages = array();
         foreach ($conversation_req->data as $message)
@@ -284,11 +310,11 @@ class InstagramAPI extends SocialLinkAPI {
             // help
         }
         else{
-            $message_req = json_decode($this->get_request(
+            $message_req = $this->getIG(
                 self::BASE_URL."/".$response->message_id,
-                $this->headers,
-                array("fields" => "created_time")
-            ));
+                array("fields" => "created_time"),
+                $error
+            );
 
             // help more error handling pls TODO
             if ($message_req === null){

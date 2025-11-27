@@ -188,8 +188,6 @@ class SocialLinkPlugin extends Plugin
     public function sync($object, $data)
     {
         // pull messages from social media and sync
-        //$this->log("This is so fetch.");
-
         // TODO: do this for each platform.
         
         $api_key = self::$config_static->get("instagram-api-key");
