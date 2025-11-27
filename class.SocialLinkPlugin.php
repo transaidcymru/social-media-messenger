@@ -194,7 +194,12 @@ class SocialLinkPlugin extends Plugin
 
         $cursed = null;
         $api = new InstagramAPI($api_key, $cursed);
-        error_log("PLS O PLS.... :( ".$cursed);
+
+        if ($cursed !== null) {
+            SLP_Log("Failed to initialise Instagram API: \"".$cursed."\"");
+            return;
+        }
+
         $zero_hour = self::$config_static->get("zero-hour");
 
         $conversations = $api->getConversations();

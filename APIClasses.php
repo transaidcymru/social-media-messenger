@@ -187,13 +187,6 @@ class InstagramAPI extends SocialLinkAPI {
             ];
             //$error = null;
             $this->my_id = $this->getOwnID($error);
-            SLP_Log("weeeeeeeeeee ?");
-            if ($error !== null) {
-                SLP_Log($error);
-            }
-            else{
-                SLP_Log("what the log?");
-            }
         } catch(Exception $e) {
             SLP_Log("Failed to construct Instagram API");
         }
@@ -218,11 +211,8 @@ class InstagramAPI extends SocialLinkAPI {
         }
 
         if ($decoded->error !== null) {
-            SLP_Log("what hap");
             $error = "Platform: Instagram. Message: ".$decoded->error->message."\nType: ".$decoded->error->type."\nCode: ".$decoded->error->code."\nSubcode: ".$decoded->error->error_subcode;
         }
-
-        SLP_Log(print_r($decoded, true), SLP_Level::DEBUG);
 
         return $decoded;
     }
