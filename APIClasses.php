@@ -217,6 +217,8 @@ class InstagramAPI extends SocialLinkAPI {
             $error = "Platform: Instagram. Message: ".$decoded->error->message."\nType: ".$decoded->error->type."\nCode: ".$decoded->error->code."\nSubcode: ".$decoded->error->error_subcode;
         }
 
+        SLP_Log(print_r($decoded, true), SLP_Level::DEBUG);
+
         return $decoded;
     }
 
