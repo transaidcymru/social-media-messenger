@@ -194,7 +194,7 @@ class SocialLinkPlugin extends Plugin
 
         $cursed = null;
         $api = new InstagramAPI($api_key, $cursed);
-        error_log($cursed);
+        error_log("PLS O PLS.... :( ".$cursed);
         $zero_hour = self::$config_static->get("zero-hour");
 
         $conversations = $api->getConversations();
