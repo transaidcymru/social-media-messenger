@@ -234,7 +234,9 @@ class InstagramAPI extends SocialLinkAPI {
     }
 
     public function getOwnID(&$error=null): string {        
-        return $this->getIG(self::BASE_URL."/me", array("fields" => "user_id"), $error)->user_id;
+        $res = $this->getIG(self::BASE_URL."/me", array("fields" => "user_id"), $error)->user_id;
+        SLP_Log("Error check: \"".$error."\"");
+        return $res;
     }
 
     public function getConversations(&$error=null): array {
