@@ -239,7 +239,7 @@ class InstagramAPI extends SocialLinkAPI {
 
     public function getOwnID(&$error=null): string {
         $res = $this->getIG(self::BASE_URL."/me", array("fields" => "user_id"), $error);
-        if ($res === null){
+        if ($res === null || $error !== null) {
             return "";
         }
         return $res->user_id;
