@@ -157,13 +157,11 @@ class SocialMediaMessage {
         $content = $imageString . $this->content;
         $messageText = strlen($content) > 0 ? $content : "🏳️‍⚧️ Message format not Supported 🏳️‍⚧️";
 
-        error_log("---- TIME FORMATTED:");
-        error_log(print_r($time_formatted, true));
-        error_log(print_r($this->time, true));
         $extra_style = $this->from_client ? "":"justify-content:flex-end;";
         $outer_border = $this->from_client ? "1em 0em":"0em 1em";
         $inner_border = $this->from_client ? "0.5em 0em":"0em 0.5em";
-        return "<div style='margin: 1em;display:flex;$extra_style'><div><div style='font-size: smaller'>$time_formatted</div> <div style='background-image:linear-gradient(0deg, #5BCEFA 0%, #5BCEFA 20%, #F5A9B8 20%, #F5A9B8 40%, #ffffff 40%, #ffffff 60%, #F5A9B8 60%, #F5A9B8 80%, #5BCEFA 80%, #5BCEFA 100%); width: fit-content;padding:0.5em; border-radius:1em 1em $outer_border;'><div style='padding:0.5em;background-color:white; border-radius:0.5em 0.5em $inner_border'>$messageText</div></div></div></div>";
+        $bg = $this->from_client ? "linear-gradient(0deg, #5BCEFA 0%, #5BCEFA 20%, #F5A9B8 20%, #F5A9B8 40%, #ffffff 40%, #ffffff 60%, #F5A9B8 60%, #F5A9B8 80%, #5BCEFA 80%, #5BCEFA 100%)" : "linear-gradient(180deg, #fddb00 0%, #fddb00 25%, #ffffff 25%, #ffffff 50%, #9c5cd4 50%, #9c5cd4 75%, #000000 75%, #000000 100%)";
+        return "<div style='margin:1em;display:flex'><div><div style='font-size:smaller'>$time_formatted</div><div style='background-image:$bg;width:fit-content;padding:.5em;border-radius:1em 1em $outer_border'><div style='padding:.5em;background-color:#fff;border-radius:.5em .5em $inner_border'>$messageText</div></div></div></div>";
     }
 }
 
@@ -250,8 +248,6 @@ class InstagramAPI extends SocialLinkAPI {
 
             if ($time <= $since)
                 break;
-            error_log(print_r($message, true));
-            error_log(print_r($this->my_id, true));
             array_push($messages, new SocialMediaMessage(
                 $id,
                 $time,
