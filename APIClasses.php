@@ -238,7 +238,7 @@ class InstagramAPI extends SocialLinkAPI {
         return $request->expires_in;
     }
 
-    public function getOwnID(&$error=null): string {        
+    public function getOwnID(&$error=null): string|null {        
         $res = $this->getIG(self::BASE_URL."/me", array("fields" => "user_id"), $error)->user_id;
         SLP_Log("Error check: \"".$error."\"");
         return $res;
