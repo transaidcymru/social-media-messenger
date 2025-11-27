@@ -188,7 +188,6 @@ class InstagramAPI extends SocialLinkAPI {
             //$error = null;
             $this->my_id = $this->getOwnID($error);
             SLP_Log("weeeeeeeeeee ?");
-            error_log("pls log somehow");
             if ($error !== null) {
                 SLP_Log($error);
             }
@@ -238,10 +237,12 @@ class InstagramAPI extends SocialLinkAPI {
         return $request->expires_in;
     }
 
-    public function getOwnID(&$error=null): string|null {        
-        $res = $this->getIG(self::BASE_URL."/me", array("fields" => "user_id"), $error)->user_id;
-        SLP_Log("Error check: \"".$error."\"");
-        return $res;
+    public function getOwnID(&$error=null): string {
+        $res = $this->getIG(self::BASE_URL."/me", array("fields" => "user_id"), $error);
+        if ($res === null){
+            return "";
+        }
+        return $res->user_id;
     }
 
     public function getConversations(&$error=null): array {
