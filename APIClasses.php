@@ -190,6 +190,9 @@ class InstagramAPI extends SocialLinkAPI {
             if ($error !== null) {
                 SLP_Log($error);
             }
+            else{
+                SLP_Log("what the log?");
+            }
         } catch(Exception $e) {
             SLP_Log("Failed to construct Instagram API");
         }
