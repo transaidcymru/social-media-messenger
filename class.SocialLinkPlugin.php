@@ -18,6 +18,7 @@ require_once 'config.php';
 require_once 'mysqli.php';
 require_once 'SocialLinkDB.php';
 require_once 'APIClasses.php';
+require_once 'SLP_Log.php';
 
 class SocialLinkPlugin extends Plugin
 {
@@ -57,6 +58,8 @@ class SocialLinkPlugin extends Plugin
     {
         try {
             self::$config_static = $this->getConfig();
+
+            SLP_Log("HELLO THERE", SLP_Level::ERROR);
 
             Signal::connect('threadentry.created', array($this, 'onNewEntry'));
             Signal::connect('cron', callable: array($this, 'cron'));

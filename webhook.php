@@ -30,7 +30,7 @@ if (strcmp($body->object, "instagram") === 0) {
     Signal::send('smm.instagram-webhook', null, $body);
 }
 
-error_log("----- WEBHOOK TAP -----");
-error_log(print_r(basename($_SERVER['REQUEST_URI']), true));
-error_log(print_r($body, true));
+//error_log("----- WEBHOOK TAP -----");
+//error_log(print_r(basename($_SERVER['REQUEST_URI']), true));
+//error_log(print_r($body, true));
 

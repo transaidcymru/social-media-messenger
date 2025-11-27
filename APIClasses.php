@@ -179,6 +179,9 @@ class InstagramAPI extends SocialLinkAPI {
                 "Content-Type: application/json"
             ];
             $this->my_id = $this->getOwnID();
+            
+            SLP_Log("HELLO THERE ONCE AGAIN", SLP_Level::WARN);
+
         } catch(Exception $e) {
             error_log("failed to construct instagram api");
         }
