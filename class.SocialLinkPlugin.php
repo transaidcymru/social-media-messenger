@@ -41,8 +41,8 @@ class SocialLinkPlugin extends Plugin
     {
         if (self::$config_static === null)
         {
-            $error = "configuration not yet initialised: plugin not instanced.";
-            return;
+            $error = "Configuration not yet initialised: plugin not instanced.";
+            return null;
         }
         return self::$config_static;
 
@@ -59,21 +59,19 @@ class SocialLinkPlugin extends Plugin
         try {
             self::$config_static = $this->getConfig();
 
-            SLP_Log("HELLO THERE", SLP_Level::ERROR);
-
             Signal::connect('threadentry.created', array($this, 'onNewEntry'));
             Signal::connect('cron', callable: array($this, 'cron'));
             Signal::connect('smm.instagram-webhook', array($this, 'requestSync'));
+
             $error = null;
             SocialLinkDB\initTable($error);
             if ($error !== null)
             {
-                error_log("Database initialisation failed: $error");
-                return;
+                SLP_Log("Database initialisation failed: $error");
             }
 
         } catch (Exception $e) {
-            error_log(print_r($e, true));
+            SLP_Log(print_r($e, true));
         }
 
     }
@@ -190,7 +188,7 @@ class SocialLinkPlugin extends Plugin
     public function sync($object, $data)
     {
         // pull messages from social media and sync
-        $this->log("This is so fetch.");
+        //$this->log("This is so fetch.");
 
         // TODO: do this for each platform.
         

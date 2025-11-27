@@ -93,14 +93,11 @@ function initTable(&$error = null)
         $sql = file_get_contents(__DIR__.'/install.sql');
         $create_table_q = db_query($sql);
 
-        if(!$create_table_q)
+        if (!$create_table_q)
         {
             $error = "Error creating table in database.";
-            return;
         }
     }
-
-    return;
 }
 
 function getSocialSessionFromTicketId(int $ticket_id, &$error=null): SocialSession | null
