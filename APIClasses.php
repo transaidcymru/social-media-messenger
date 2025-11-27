@@ -178,14 +178,14 @@ class InstagramAPI extends SocialLinkAPI {
     private string $my_id;
     private array $headers;
 
-    function __construct(string $api_key) {
+    function __construct(string $api_key, &$error = null) {
         try {
             $this->api_key = $api_key;
             $this->headers = [
                 "Authorization: Bearer $this->api_key",
                 "Content-Type: application/json"
             ];
-            $error = null;
+            //$error = null;
             $this->my_id = $this->getOwnID($error);
             SLP_Log("weeeeeeeeeee ?");
             error_log("pls log somehow");

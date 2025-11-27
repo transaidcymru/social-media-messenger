@@ -192,7 +192,9 @@ class SocialLinkPlugin extends Plugin
         
         $api_key = self::$config_static->get("instagram-api-key");
 
-        $api = new InstagramAPI($api_key);
+        $cursed = null;
+        $api = new InstagramAPI($api_key, $cursed);
+        error_log($cursed);
         $zero_hour = self::$config_static->get("zero-hour");
 
         $conversations = $api->getConversations();
