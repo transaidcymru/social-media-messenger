@@ -157,11 +157,11 @@ class SocialMediaMessage {
         $content = $imageString . $this->content;
         $messageText = strlen($content) > 0 ? $content : "🏳️‍⚧️ Message format not Supported 🏳️‍⚧️";
 
-        $extra_style = $this->from_client ? "":"justify-content:flex-end;";
+        $extra_style = $this->from_client ? "":"justify-content:flex-end";
         $outer_border = $this->from_client ? "1em 0em":"0em 1em";
         $inner_border = $this->from_client ? "0.5em 0em":"0em 0.5em";
         $bg = $this->from_client ? "linear-gradient(0deg, #5BCEFA 0%, #5BCEFA 20%, #F5A9B8 20%, #F5A9B8 40%, #ffffff 40%, #ffffff 60%, #F5A9B8 60%, #F5A9B8 80%, #5BCEFA 80%, #5BCEFA 100%)" : "linear-gradient(180deg, #fddb00 0%, #fddb00 25%, #ffffff 25%, #ffffff 50%, #9c5cd4 50%, #9c5cd4 75%, #000000 75%, #000000 100%)";
-        return "<div style='margin:1em;display:flex'><div><div style='font-size:smaller'>$time_formatted</div><div style='background-image:$bg;width:fit-content;padding:.5em;border-radius:1em 1em $outer_border'><div style='padding:.5em;background-color:#fff;border-radius:.5em .5em $inner_border'>$messageText</div></div></div></div>";
+        return "<div style='margin:1em;display:flex;$extra_style'><div><div style='font-size:smaller'>$time_formatted</div><div style='background-image:$bg;width:fit-content;padding:.5em;border-radius:1em 1em $outer_border'><div style='padding:.5em;background-color:#fff;border-radius:.5em .5em $inner_border'>$messageText</div></div></div></div>";
     }
 }
 
