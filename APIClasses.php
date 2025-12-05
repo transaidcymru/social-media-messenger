@@ -314,7 +314,7 @@ class InstagramAPI extends SocialLinkAPI {
                 "message" => array("text" => $message_content),
                 "recipient" => array("id" => $dest_user_id)
             )),
-            $error
+            error: $error
         ));
 
         if($error !== null)
