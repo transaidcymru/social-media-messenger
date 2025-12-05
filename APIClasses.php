@@ -188,7 +188,7 @@ class InstagramAPI extends SocialLinkAPI {
             //$error = null;
             $this->my_id = $this->getOwnID($error);
         } catch(Exception $e) {
-            SLP_Log("Failed to construct Instagram API");
+            SCHLORP("Failed to construct Instagram API");
         }
         
     }

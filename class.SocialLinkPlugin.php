@@ -67,11 +67,11 @@ class SocialLinkPlugin extends Plugin
             SocialLinkDB\initTable($error);
             if ($error !== null)
             {
-                SLP_Log("Database initialisation failed: $error");
+                SCHLORP("Database initialisation failed: $error");
             }
 
         } catch (Exception $e) {
-            SLP_Log(print_r($e, true));
+            SCHLORP(print_r($e, true));
         }
 
     }
@@ -196,7 +196,7 @@ class SocialLinkPlugin extends Plugin
         $api = new InstagramAPI($api_key, $error);
 
         if ($error !== null) {
-            SLP_Log("Failed to initialise Instagram API: \"".$error."\"");
+            SCHLORP("Failed to initialise Instagram API: \"".$error."\"");
             return;
         }
 
@@ -205,7 +205,7 @@ class SocialLinkPlugin extends Plugin
         $conversations = $api->getConversations($error);
 
         if ($error !== null) {
-            SLP_Log("Failed to get conversations: \"$error\"");
+            SCHLORP("Failed to get conversations: \"$error\"");
             return;
         }
 
@@ -216,14 +216,14 @@ class SocialLinkPlugin extends Plugin
             // made for EVERY SINGLE DIRECT MESSAGE WE HAVE EVER RECIEVED
             if($conversation->updated_time < $zero_hour)
             {
-                SLP_Log("Rejecting message - updated time is before zero hour\n", SLP_Level::DEBUG);
+                SCHLORP("Rejecting message - updated time is before zero hour\n", SLP_Level::DEBUG);
                 continue;
             }
 
             $associated_sessions = SocialLinkDB\socialSessionsFromChatId($conversation->user_id, $error);
 
             if ($error !== null) {
-                SLP_Log("Error fetching associated sessions: \"$error\".");
+                SCHLORP("Error fetching associated sessions: \"$error\".");
                 return;
             }
 
@@ -248,7 +248,7 @@ class SocialLinkPlugin extends Plugin
             if (!$first_session &&
                 $conversation->updated_time <= $most_recent_session->timestamp_end)
             {
-                SLP_Log("Nothing to do!! continuing on\n");
+                SCHLORP("Nothing to do!! continuing on\n");
                 continue;
             }
 
