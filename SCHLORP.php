@@ -1,5 +1,5 @@
 <?php
-    enum SLP_Level {
+    enum SCHLORPNESS {
         case DEBUG;
         case INFO;
         case WARN;
@@ -7,7 +7,7 @@
         case GUBBINS;
     }
 
-    function SCHLORP($msg, SLP_Level $level = SLP_Level::ERROR){        
+    function SCHLORP($msg, SCHLORPNESS $level = SCHLORPNESS::ERROR){        
         error_log("SLP ".$level->name.": ".$msg);
     }
 

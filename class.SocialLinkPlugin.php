@@ -216,7 +216,7 @@ class SocialLinkPlugin extends Plugin
             // made for EVERY SINGLE DIRECT MESSAGE WE HAVE EVER RECIEVED
             if($conversation->updated_time < $zero_hour)
             {
-                SCHLORP("Rejecting message - updated time is before zero hour\n", SLP_Level::DEBUG);
+                SCHLORP("Rejecting message - updated time is before zero hour\n", SCHLORPNESS::DEBUG);
                 continue;
             }
 
