@@ -90,29 +90,39 @@ class SocialLinkPlugin extends Plugin
         $ticketId = $entry->getThreadId();
 
         if ($ticketId === null){
-            $this->log("SCREAMING");
+            SCHLORP("TICKET ID IS NULL. WHY");
             return;
         }
 
         $error = null;
         $session = SocialLinkDB\getSocialSessionFromTicketId($ticketId, $error);
-        if ($session === null) {
-            // early out
-            $this->log("it broke :( Error: ".$error);
+        if ($error !== null) {
+            SCHLORP("it broke :( Error: \"$error\"");
             return;
         }
         
         if ($entry->getTypeName() === 'response'){
             $api_key = self::$config_static->get("instagram-api-key");
-            $api = new InstagramAPI($api_key);
+            $api = new InstagramAPI($api_key, $error);
+            if ($error !== null){
+                SCHLORP("Error initialising Instagram API: \"$error\"");
+                return;
+            }
 
-            $error = null;
             $created_time = $api->sendMessage($session->chat_id, strip_tags($entry->getBody()), $error);
 
-            if ($error === null){
-
-                SocialLinkDB\updateEndTime($session, strtotime($created_time));
+            if ($error !== null) {
+                SCHLORP("Error sending message: \"$error\"");
+                return;
             }
+
+            SocialLinkDB\updateEndTime($session, strtotime($created_time), $error);
+
+            if ($error !== null) {
+                SCHLORP("Error updating end time: \"$error\"");
+                return;
+            }
+
         }
     }
 
@@ -235,7 +245,7 @@ class SocialLinkPlugin extends Plugin
             // made for EVERY SINGLE DIRECT MESSAGE WE HAVE EVER RECIEVED
             if($conversation->updated_time < $zero_hour)
             {
-                SCHLORP("Rejecting message - updated time is before zero hour\n", SCHLORPNESS::DEBUG);
+                SCHLORP("Rejecting message - updated time is before zero hour", SCHLORPNESS::DEBUG);
                 continue;
             }
 
@@ -267,7 +277,7 @@ class SocialLinkPlugin extends Plugin
             if (!$first_session &&
                 $conversation->updated_time <= $most_recent_session->timestamp_end)
             {
-                SCHLORP("Nothing to do!! continuing on\n", SCHLORPNESS::DEBUG);
+                SCHLORP("Nothing to do!! continuing on", SCHLORPNESS::DEBUG);
                 continue;
             }
 
@@ -303,11 +313,23 @@ class SocialLinkPlugin extends Plugin
             self::$config_static->set("ig_last_token_refresh", $now);
 
             $api_key = self::$config_static->get("instagram-api-key");
-            $api = new InstagramAPI($api_key);
+            $error = null;
+            $api = new InstagramAPI($api_key, $error);
+            if ($error !== null)
+            {
+                SCHLORP("Error constructing instagram api: \"$error\"");
+                return;
+            }
 
-            $expiry = $api->refreshAccessToken();
+            $expiry = $api->refreshAccessToken($error);
+            if ($error !== null)
+            {
+                SCHLORP("Failed to refresh access token: \"$error\"");
+                return;
+            }
 
-            print_r("Instagram token refresh (last sync: $last_sync, expires in: $expiry)\n");
+            SCHLORP("Instagram token refresh (last sync: \"$last_sync\", expires in: \"$expiry\")",
+                SCHLORPNESS::INFO);
         }
     }
 
@@ -378,49 +400,6 @@ class SocialLinkPlugin extends Plugin
             return;
         }
         parent::uninstall($errors);
-    }
-
-    private function debug_log($text, $_ = null): void
-    {
-        if (true) {
-            $args = func_get_args();
-            $text = array_shift($args);
-            $this->log($text, $args); // send variable amount of args as array
-        }
-    }
-    private function log(string $text, $_ = null): void
-    {
-        // Log to system, if available
-        global $ost;
-
-        $args = func_get_args();
-        $format = array_shift($args);
-        if (!$format) {
-            return;
-        }
-        if (is_array($args[0])) {
-            // handle debug_log's version or array of variables passed
-            $text = vsprintf($format, $args[0]);
-        } elseif (count($args)) {
-            // handle normal variables as arguments
-            $text = vsprintf($format, $args);
-        } else {
-            // no variables passed
-            $text = $format;
-        }
-
-        if (!($ost instanceof osTicket)) {
-            // doh, can't log to the admin log without this object
-            // setup a callback to do the logging afterwards:
-            // save the log message in memory for now
-            // the callback registered above will retrieve it and log it
-            $this->messages[] = $text;
-            error_log("DEBUG: Failed as ost is not an osTicket instance..: ".$text);
-            return;
-        }
-
-        error_log(self::PLUGIN_NAME.": $text");
-        $ost->logInfo(wordwrap($text, 30), $text, false);
     }
 }
 ?>

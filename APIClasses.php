@@ -313,29 +313,33 @@ class InstagramAPI extends SocialLinkAPI {
             json_encode(array(
                 "message" => array("text" => $message_content),
                 "recipient" => array("id" => $dest_user_id)
-            ))
+            )),
+            $error
         ));
 
-        // TODO error handling
-        if ($response === null){
-            // help
-        }
-        else{
-            $message_req = $this->getIG(
-                self::BASE_URL."/".$response->message_id,
-                array("fields" => "created_time"),
-                $error
-            );
+        if($error !== null)
+            return null;
 
-            // help more error handling pls TODO
-            if ($message_req === null){
-
-            }else{
-                // TODO: Flag for sync update if request is successful
-                return $message_req->created_time;
-            }
+        if ($response === null) {
+            $error = "Response is null";
+            return null;
         }
 
-        return $response;
+        $message_req = $this->getIG(
+            self::BASE_URL."/".$response->message_id,
+            array("fields" => "created_time"),
+            $error
+        );
+
+        if($error !== null)
+            return null;
+
+        if ($message_req === null){
+            $error = "message request is null";
+            return null;
+
+        }
+
+        return $message_req->created_time;
     }
 }

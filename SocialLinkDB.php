@@ -129,8 +129,8 @@ function getSocialSessionFromTicketId(int $ticket_id, &$error=null): SocialSessi
             session_type: $row["session_type"] ?? ""
         );
     }
-    else{
-        error_log(message: "getSocialSessionFromTicketId call => \"ticketId=".strval($ticket_id))."\" returned 0 rows!";
+    else {
+        $error = "getSocialSessionFromTicketId call => \"ticketId=".strval($ticket_id)."\" returned 0 rows!";
     }
 
     return null;
