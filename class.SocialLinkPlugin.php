@@ -18,7 +18,7 @@ require_once 'config.php';
 require_once 'mysqli.php';
 require_once 'SocialLinkDB.php';
 require_once 'APIClasses.php';
-require_once 'SLP_Log.php';
+require_once 'SCHLORP.php';
 
 class SocialLinkPlugin extends Plugin
 {
