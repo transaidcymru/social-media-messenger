@@ -116,27 +116,32 @@ class SocialLinkPlugin extends Plugin
         }
     }
 
-    private function addMessagesToTicket(Ticket $ticket, array $messages)
+    private function addMessagesToTicket(Ticket $ticket, array $messages, &$error)
     {
         $string = join(array_map(fn ($m) => $m->encode(),$messages));
         // TODO: as far as i can tell this is sufficient for a successful post. will find out.
         $attachments = array_merge(...array_map(fn ($m) => $m->attachments, $messages));
-        print_r($attachments);
-        $ticket->postMessage(
+        $message = $ticket->postMessage(
             array(
                 "message" => $string,
                 "type" => "text/html",
                 "userId" => $ticket->getUserId(),
                 "attachments" => $attachments
             ),
-            "API" // TODO: fix me
+            "API",
         );
+        if ($message === null)
+        {
+            $ticket_id = $ticket->getId();
+            $error = "unable to post message to thread? ticket_id \"$ticket_id\"";
+        }
     }
 
     private function newSession(
         SocialMediaConversation $conversation,
         array $messages,
-        SocialLinkDB\Platform $platform)
+        SocialLinkDB\Platform $platform,
+        &$error=null)
     {
         $attachments = array_merge(...array_map(fn ($m) => $m->attachments, $messages));
         $email = "$conversation->id@$platform->name.void";
@@ -157,30 +162,44 @@ class SocialLinkPlugin extends Plugin
             "email" => $email), true, true);
 
         $ticket = Ticket::create($ticket_entry, $errors, $ticket_entry["source"]);
+        if (sizeof($errors) > 0)
+        {
+            $error = print_r($errors, true);
+            return;
+        }
 
         SocialLinkDB\insertSocialSession(new SocialLinkDB\SocialSession(
             $ticket->getId(),
             $conversation->user_id,
             $platform,
             $messages[0]->time,
-            $messages[count($messages) - 1]->time
+            $messages[count($messages) - 1]->time,
+            $error
         ));
         $ticket->releaseLock();
     }
 
     private function updateSession(
         SocialLinkDB\SocialSession $most_recent_session,
-        SocialMediaConversation $conversation,
-        array $messages)
+        array $messages,
+        &$error)
     {
         $ticket = Ticket::lookup($most_recent_session->ticket_id);
-        //get lock and release lock?
-        // TODO: post messages
-        $this->addMessagesToTicket($ticket, $messages);
+
+        if ($ticket === null)
+        {
+            $error = "couldn't find ticket \"$most_recent_session->ticket_id\"";
+            return;
+        }
+
+        $this->addMessagesToTicket($ticket, $messages, $error);
+
+        if ($error !== null)
+            return;
         
         $end_time = $messages[count($messages) - 1]->time;
         SocialLinkDB\updateEndTime(
-            $most_recent_session, $end_time);
+            $most_recent_session, $end_time, $error);
         $ticket->releaseLock();
     }
 
@@ -248,19 +267,26 @@ class SocialLinkPlugin extends Plugin
             if (!$first_session &&
                 $conversation->updated_time <= $most_recent_session->timestamp_end)
             {
-                SCHLORP("Nothing to do!! continuing on\n");
+                SCHLORP("Nothing to do!! continuing on\n", SCHLORPNESS::DEBUG);
                 continue;
             }
 
             // if we get this far we have tickets to update/create.
             $update_since = $first_session ? $zero_hour : $most_recent_session->timestamp_end;
 
-            $messages = $api->getMessages($conversation->id, $update_since);
+            $messages = $api->getMessages($conversation->id, $update_since, $error);
+            if ($error !== null) {
+                SCHLORP("Critical FAIL: \"$error\"", SCHLORPNESS::GUBBINS);
+                return;
+            }
 
             if($new_session)
-                $this->newSession($conversation, $messages, SocialLinkDB\Platform::Instagram);
+                $this->newSession($conversation, $messages, SocialLinkDB\Platform::Instagram, $error);
             else
-                $this->updateSession($most_recent_session, $conversation, $messages);
+                $this->updateSession($most_recent_session, $messages, $error);
+
+            if ($error !== null)
+                SCHLORP("GOD FUCKING DAMN IT. I nearly had it there: \"$error\"");
         }
 
     }

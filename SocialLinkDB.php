@@ -165,9 +165,9 @@ function socialSessionsFromChatId(string $chat_id, &$error=null): array
     return $ret;
 }
 
-function insertSocialSession(SocialSession $session, &$error=null)
+function insertSocialSession(SocialSession $session, &$error=null): bool
 {
-    db_query("INSERT INTO " . TABLE_NAME
+    $q = db_query("INSERT INTO " . TABLE_NAME
         . " (ticket_id, chat_id, platform, timestamp_start, timestamp_end)"
         . " VALUES ("
         .$session->ticket_id.", '"
@@ -175,13 +175,26 @@ function insertSocialSession(SocialSession $session, &$error=null)
         .$session->platform->name."', '"
         .date("Y-m-d H:i:s", $session->timestamp_start)."', '"
         .date("Y-m-d H:i:s", $session->timestamp_end)."');");
+
+    if (false === $q)
+    {
+        $error = "Error querying database.";
+        return false;
+    }
+    return $q;
 }
 
-function updateEndTime(SocialSession $session, int $end_time)
+function updateEndTime(SocialSession $session, int $end_time, &$error=null): bool
 {
-    db_query("UPDATE " . TABLE_NAME
+    $q = db_query("UPDATE " . TABLE_NAME
         . " SET timestamp_end='" . date("Y-m-d H:i:s", $end_time)
         . "' WHERE session_id=" . $session->session_id . ";");
+    if (false === $q)
+    {
+        $error = "Error querying database.";
+        return false;
+    }
+    return $q;
 }
 
 ?>

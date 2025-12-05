@@ -266,13 +266,19 @@ class InstagramAPI extends SocialLinkAPI {
         return $return;
     }
 
-    public function getMessages(string $conversation_id, int $since) {
+    public function getMessages(string $conversation_id, int $since, &$error=null) {
         $conversation_req = $this->getIG(
             self::BASE_URL."/".$conversation_id."/messages",
-            array("fields" => "created_time,from,message,attachments", "limit" => "20")
+            array("fields" => "created_time,from,message,attachments", "limit" => "20"),
+            $error
         );
 
         $messages = array();
+
+        if ($error !== null) {
+            return $messages;
+        }
+
         foreach ($conversation_req->data as $message)
         {
             $time = strtotime($message->created_time);
