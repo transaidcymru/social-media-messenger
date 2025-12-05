@@ -242,7 +242,11 @@ class InstagramAPI extends SocialLinkAPI {
             $error
         );
 
-        $ret = array();
+        $return = array();
+        if ($error !== null) {
+            return $return;
+        }
+
         foreach ($conversations_req->data as $conversation)
         {
             // if it's 1, you're talking to yourself.
@@ -251,7 +255,7 @@ class InstagramAPI extends SocialLinkAPI {
                 continue;
 
             array_push(
-                $ret,
+                $return,
                 new SocialMediaConversation(
                     $conversation->id,
                     $conversation->participants->data[1]->id,
@@ -259,7 +263,7 @@ class InstagramAPI extends SocialLinkAPI {
                     strtotime($conversation->updated_time)));
         }
 
-        return $ret;
+        return $return;
     }
 
     public function getMessages(string $conversation_id, int $since) {

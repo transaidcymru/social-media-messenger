@@ -17,9 +17,9 @@ params = {
 }
 
 r0 = requests.get("https://graph.instagram.com/v23.0/me",
-             headers=headers, params={"fields": "user_id,username,id"})
+             headers=headers, params={"fields": "user_id,username"})
 
-print(r0.json())
+pp(r0.json())
 
 exit()
 

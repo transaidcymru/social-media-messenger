@@ -192,17 +192,23 @@ class SocialLinkPlugin extends Plugin
         
         $api_key = self::$config_static->get("instagram-api-key");
 
-        $cursed = null;
-        $api = new InstagramAPI($api_key, $cursed);
+        $error = null;
+        $api = new InstagramAPI($api_key, $error);
 
-        if ($cursed !== null) {
-            SLP_Log("Failed to initialise Instagram API: \"".$cursed."\"");
+        if ($error !== null) {
+            SLP_Log("Failed to initialise Instagram API: \"".$error."\"");
             return;
         }
 
         $zero_hour = self::$config_static->get("zero-hour");
 
-        $conversations = $api->getConversations();
+        $conversations = $api->getConversations($error);
+
+        if ($error !== null) {
+            SLP_Log("Failed to get conversations: \"$error\"");
+            return;
+        }
+
         foreach ($conversations as $conversation)
         {
             // reject the session if update time is before the 'zero hour'.
@@ -210,11 +216,16 @@ class SocialLinkPlugin extends Plugin
             // made for EVERY SINGLE DIRECT MESSAGE WE HAVE EVER RECIEVED
             if($conversation->updated_time < $zero_hour)
             {
-                print_r("rejecting message - updated time is before zero hour\n");
+                SLP_Log("Rejecting message - updated time is before zero hour\n", SLP_Level::DEBUG);
                 continue;
             }
 
-            $associated_sessions = SocialLinkDB\socialSessionsFromChatId($conversation->user_id);
+            $associated_sessions = SocialLinkDB\socialSessionsFromChatId($conversation->user_id, $error);
+
+            if ($error !== null) {
+                SLP_Log("Error fetching associated sessions: \"$error\".");
+                return;
+            }
 
             $most_recent_session = null;
             foreach ($associated_sessions as $session)
@@ -237,7 +248,7 @@ class SocialLinkPlugin extends Plugin
             if (!$first_session &&
                 $conversation->updated_time <= $most_recent_session->timestamp_end)
             {
-                print_r("Nothing to do!! continuing on\n");
+                SLP_Log("Nothing to do!! continuing on\n");
                 continue;
             }
 

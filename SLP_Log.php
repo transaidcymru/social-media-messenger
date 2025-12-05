@@ -1,5 +1,4 @@
 <?php
-
     enum SLP_Level {
         case DEBUG;
         case INFO;
