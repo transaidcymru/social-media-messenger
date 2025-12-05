@@ -8,7 +8,7 @@
     }
 
     function SCHLORP($msg, SCHLORPNESS $level = SCHLORPNESS::ERROR){        
-        error_log("SLP ".$level->name.": ".$msg);
+        error_log("SCHLORP ".$level->name.": ".$msg);
     }
 
 ?>
