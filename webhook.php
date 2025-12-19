@@ -34,8 +34,3 @@ else {
     //SLP_Log("Whoops! Looks like the Social Link Plugin is not installed & enabled.");
     echo("<html><p>hewwo? The Social Link Plugin is not installed or enabled.<br /><br />Meow!<br /><br />|\---/|<br />| o_o |<br />&nbsp;\_^_/<br /></p></html>");
 }
-
-//error_log("----- WEBHOOK TAP -----");
-//error_log(print_r(basename($_SERVER['REQUEST_URI']), true));
-//error_log(print_r($body, true));
-

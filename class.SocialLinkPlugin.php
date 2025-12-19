@@ -382,7 +382,7 @@ class SocialLinkPlugin extends Plugin
         return $tickets_view;
     }
 
-
+    // Broken :( osTicket doesn't ever call it...
     public function pre_uninstall(&$errors)
     {
         // Note: THIS NEVER RUNS!!!!!
@@ -390,13 +390,12 @@ class SocialLinkPlugin extends Plugin
         global $ost;
         // Send an alert to the system admin:
         //$ost->alertAdmin(self::PLUGIN_NAME . ' has been uninstalled', "You wanted that right?", true);
-        $ost->logError(self::PLUGIN_NAME, "Plugin has been uninstalled!!!", false);
-        error_log("uninsalled!!!!");
+        //$ost->logError(self::PLUGIN_NAME, "Plugin has been uninstalled!!!", false);
 
         $create_table_query = db_query("DROP TABLE IF EXISTS ".self::TABLE_NAME.";");
 
         if (!$create_table_query) {
-            error_log(self::PLUGIN_NAME . ": error creating table in database");
+            //error_log(self::PLUGIN_NAME . ": error creating table in database");
             return;
         }
         parent::uninstall($errors);
