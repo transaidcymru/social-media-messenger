@@ -268,7 +268,10 @@ class SocialLinkPlugin extends Plugin
 
             $first_session = $most_recent_session === null;
             if (!$first_session)
-                $has_open_session = Ticket::lookup($most_recent_session->ticket_id)->isOpen();
+            {
+                $ticket = Ticket::lookup($most_recent_session->ticket_id);
+                $has_open_session = $ticket !== null && $ticket->isOpen();
+            }
             $new_session = $first_session || !$has_open_session;
 
             // more short circuiting. This triggers if we found the session but it's up to date.
