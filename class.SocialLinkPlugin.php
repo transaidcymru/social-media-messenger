@@ -184,8 +184,7 @@ class SocialLinkPlugin extends Plugin
             $platform,
             $messages[0]->time,
             $messages[count($messages) - 1]->time,
-            $error
-        ));
+        ), $error);
         $ticket->releaseLock();
     }
 
