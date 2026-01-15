@@ -114,11 +114,14 @@ class SocialLinkPlugin extends Plugin
         if ($result === 0 && $hub_verify_token !== null && $hub_verify_token !== "") {
             echo $hub_challenge;
         }
+        else{
+            SCHLORP("Failed to verify to challenge :(");
+        }
 
         if (strcmp($body->object, "instagram") === 0) {
             Signal::send('smm.instagram-webhook', null, $body);
         } else {
-            echo("<html><p>hewwo? The Social Link Plugin is not installed or enabled.<br /><br />Meow!<br /><br />|\---/|<br />| o_o |<br />&nbsp;\_^_/<br /></p></html>");
+            echo("<html><p>hewwo? that was not v meta of you<br /><br />Meow!<br /><br />|\---/|<br />| o_o |<br />&nbsp;\_^_/<br /></p></html>");
         }
     }
 
