@@ -81,6 +81,40 @@ class SocialLinkPlugin extends Plugin
         $this->requestTokenRefresh($this, $data);
     }
 
+    public function registerEndpoint()
+    {
+        Signal::connect("api", function ($dispatcher) use($this){
+            $dispatcher->append(
+                url_get("^/social-media-messenger/insta-webhook", function () use($this){
+                    $this->webhookCallback();
+                })
+            );
+        });
+    }
+
+    public function webhookCallback()
+    {
+        $verify_token = self::$config_static->get("instagram-verify-webhook-token");
+
+        $body = json_decode(file_get_contents("php://input"));
+
+        $hub_verify_token = $_GET["hub_verify_token"];
+        $hub_challenge = $_GET["hub_challenge"];
+        $hub_mode = $_GET["hub_mode"];
+
+        $result = strcmp($hub_verify_token, $verify_token);
+
+        if ($result === 0 && $hub_verify_token !== null && $hub_verify_token !== "") {
+            echo $hub_challenge;
+        }
+
+        if (strcmp($body->object, "instagram") === 0) {
+            Signal::send('smm.instagram-webhook', null, $body);
+        } else {
+            echo("<html><p>hewwo? WHO ARE YOU??? YOU ARE NOT INSTAGRAM?? :3<br /><br />Meow!<br /><br />|\---/|<br />| o_o |<br />&nbsp;\_^_/<br /></p></html>");
+        }
+    }
+
     // Pushes osTicket updates to social media platforms.
     // Called by threadentry.created signal. 
     public function onNewEntry($entry)
