@@ -96,6 +96,11 @@ class SocialLinkPlugin extends Plugin
                     self::webhookCallback();
                 })
             );
+            $dispatcher->append(
+                url_post("^/social-media-messenger/insta-webhook", function () {
+                    self::webhookCallback();
+                })
+            );
         });
     }
 
