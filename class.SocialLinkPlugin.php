@@ -54,6 +54,13 @@ class SocialLinkPlugin extends Plugin
     }
 
     // -- Main Procedure -------------------------------------------------------
+    //
+    public function init()
+    {
+        SCHLORP("innit");
+        self::registerEndpoint();
+    }
+
     public function bootstrap()
     {
         try {
@@ -81,18 +88,18 @@ class SocialLinkPlugin extends Plugin
         $this->requestTokenRefresh($this, $data);
     }
 
-    public function registerEndpoint()
+    public static function registerEndpoint()
     {
-        Signal::connect("api", function ($dispatcher) use($this){
+        Signal::connect("api", function ($dispatcher) {
             $dispatcher->append(
-                url_get("^/social-media-messenger/insta-webhook", function () use($this){
-                    $this->webhookCallback();
+                url_get("^/social-media-messenger/insta-webhook", function () {
+                    self::webhookCallback();
                 })
             );
         });
     }
 
-    public function webhookCallback()
+    public static function webhookCallback()
     {
         $verify_token = self::$config_static->get("instagram-verify-webhook-token");
 
@@ -111,7 +118,7 @@ class SocialLinkPlugin extends Plugin
         if (strcmp($body->object, "instagram") === 0) {
             Signal::send('smm.instagram-webhook', null, $body);
         } else {
-            echo("<html><p>hewwo? WHO ARE YOU??? YOU ARE NOT INSTAGRAM?? :3<br /><br />Meow!<br /><br />|\---/|<br />| o_o |<br />&nbsp;\_^_/<br /></p></html>");
+            echo("<html><p>hewwo? The Social Link Plugin is not installed or enabled.<br /><br />Meow!<br /><br />|\---/|<br />| o_o |<br />&nbsp;\_^_/<br /></p></html>");
         }
     }
 
