@@ -106,6 +106,8 @@ class SocialLinkPlugin extends Plugin
 
     public static function webhookCallback()
     {
+        SCHLORP("Webhook callback triggered...");
+
         $verify_token = self::$config_static->get("instagram-verify-webhook-token");
 
         $body = json_decode(file_get_contents("php://input"));
@@ -122,6 +124,8 @@ class SocialLinkPlugin extends Plugin
         else{
             SCHLORP("Failed to verify to challenge :(");
         }
+
+        SCHLORP("Token = \"".$hub_verify_token."\", challenge = \"".$hub_challenge."\", mode = \"".$hub_mode."\"");
 
         if (strcmp($body->object, "instagram") === 0) {
             Signal::send('smm.instagram-webhook', null, $body);
