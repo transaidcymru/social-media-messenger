@@ -138,7 +138,7 @@ class SocialLinkPlugin extends Plugin
     {
 
         // Get associated ticket
-        $ticketId = $entry->getThreadId();
+        $ticketId = Ticket::lookup($entry->getThread()->getPid());
 
         if ($ticketId === null){
             SCHLORP("TICKET ID IS NULL. WHY");
