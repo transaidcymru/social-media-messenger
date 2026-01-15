@@ -353,6 +353,7 @@ class SocialLinkPlugin extends Plugin
             if ($error !== null) {
                 SCHLORP("GOD FUCKING DAMN IT. I nearly had it there (new session: ".($new_session ? "yes" : "no")."): \"$error\"");
                 SCHLORP("Messages: ".(print_r($messages, true)), SCHLORPNESS::DEBUG);
+                SCHLORP("Messages: ".(print_r($conversation, true)), SCHLORPNESS::DEBUG);
             }
         }
 
