@@ -343,13 +343,16 @@ class SocialLinkPlugin extends Plugin
                 return;
             }
 
-            if($new_session)
+            if($new_session) {
                 $this->newSession($conversation, $messages, SocialLinkDB\Platform::Instagram, $error);
-            else
+            }
+            else {
                 $this->updateSession($most_recent_session, $messages, $error);
+            }
 
-            if ($error !== null)
-                SCHLORP("GOD FUCKING DAMN IT. I nearly had it there: \"$error\"");
+            if ($error !== null) {
+                SCHLORP("GOD FUCKING DAMN IT. I nearly had it there (new session: ".($new_session ? "yes" : "no")."): \"$error\"");
+            }
         }
 
     }
