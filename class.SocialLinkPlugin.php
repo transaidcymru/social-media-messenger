@@ -93,24 +93,22 @@ class SocialLinkPlugin extends Plugin
         Signal::connect("api", function ($dispatcher) {
             $dispatcher->append(
                 url_get("^/social-media-messenger/insta-webhook", function () {
-                    self::webhookCallback();
+                    self::verifyCallback();
                 })
             );
             $dispatcher->append(
                 url_post("^/social-media-messenger/insta-webhook", function () {
-                    self::webhookCallback();
+                    self::eventCallback();
                 })
             );
         });
     }
 
-    public static function webhookCallback()
+    public static function verifyCallback()
     {
         SCHLORP("Webhook callback triggered...");
 
         $verify_token = self::$config_static->get("instagram-verify-webhook-token");
-
-        $body = json_decode(file_get_contents("php://input"));
 
         $hub_verify_token = $_GET["hub_verify_token"];
         $hub_challenge = $_GET["hub_challenge"];
@@ -127,6 +125,13 @@ class SocialLinkPlugin extends Plugin
 
         SCHLORP("Token = \"".$hub_verify_token."\", challenge = \"".$hub_challenge."\", mode = \"".$hub_mode."\"");
 
+    }
+
+    public static function eventCallback()
+    {
+        SCHLORP("Webhook callback triggered...");
+
+        $body = json_decode(file_get_contents("php://input"));
         if (strcmp($body->object, "instagram") === 0) {
             Signal::send('smm.instagram-webhook', null, $body);
         } else {
