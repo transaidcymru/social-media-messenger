@@ -106,12 +106,18 @@ class SocialLinkPlugin extends Plugin
             return;
         }
 
-        $script = $dom->createElement("script");
-        $script->textContent =
-            "alert(\"Kate and Trin were at this location. Also $ticket_id \");";
-
-
-        $dom->appendChild($script);
+        $select = $dom->getElementById("reply-to");
+        // null?
+        $select->setAttribute("disabled", ":3");
+                
+        foreach($select->getElementsByTagName("option") as $option)
+        {
+            $value = $option->getAttribute("value");
+            if($value === "all")
+                $option->removeAttribute("selected");
+            else if($value === "none")
+                $option->setAttribute("selected", "OwO");
+        }
 
         $new_html = $plugin->printDom($dom);
         print $new_html;
