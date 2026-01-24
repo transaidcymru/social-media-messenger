@@ -7,7 +7,10 @@
         case GUBBINS;
     }
 
-    function SCHLORP($msg, SCHLORPNESS $level = SCHLORPNESS::ERROR){        
+    function SCHLORP($msg, SCHLORPNESS $level = SCHLORPNESS::ERROR){
+        if ($level == SCHLORPNESS::DEBUG){
+            return;
+        }
         error_log("SCHLORP ".$level->name.": ".$msg);
     }
 

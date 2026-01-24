@@ -57,7 +57,6 @@ class SocialLinkPlugin extends Plugin
     //
     public function init()
     {
-        SCHLORP("innit");
         self::registerEndpoint();
     }
 
@@ -142,8 +141,6 @@ class SocialLinkPlugin extends Plugin
 
     public static function verifyCallback()
     {
-        SCHLORP("Webhook callback triggered...");
-
         $verify_token = self::$config_static->get("instagram-verify-webhook-token");
 
         $hub_verify_token = $_GET["hub_verify_token"];
@@ -156,17 +153,13 @@ class SocialLinkPlugin extends Plugin
             echo $hub_challenge;
         }
         else{
-            SCHLORP("Failed to verify to challenge :(");
+            SCHLORP("Failed to verify to challenge: ".$hub_verify_token);
         }
-
-        SCHLORP("Token = \"".$hub_verify_token."\", challenge = \"".$hub_challenge."\", mode = \"".$hub_mode."\"");
 
     }
 
     public static function eventCallback()
     {
-        SCHLORP("Webhook callback triggered...");
-
         $body = json_decode(file_get_contents("php://input"));
         if (strcmp($body->object, "instagram") === 0) {
             Signal::send('smm.instagram-webhook', null, $body);
@@ -181,7 +174,7 @@ class SocialLinkPlugin extends Plugin
     {
 
         // Get associated ticket
-        $ticketId = Ticket::lookup($entry->getThread()->getPid());
+        $ticketId = $entry->getThread()->getObjectId();
 
         if ($ticketId === null){
             SCHLORP("TICKET ID IS NULL. WHY");
@@ -247,7 +240,7 @@ class SocialLinkPlugin extends Plugin
         SocialLinkDB\Platform $platform,
         &$error=null)
     {
-        $attachments = array_merge(...array_map(fn ($m) => $m->attachments, $messages));
+        $attachments = sizeof($messages) > 0 ? array_merge(...array_map(fn ($m) => $m->attachments, $messages)) : array();
         $email = "$conversation->id@$platform->name.void";
         $ticket_entry = array(
             "source" => "API",
@@ -255,7 +248,7 @@ class SocialLinkPlugin extends Plugin
             "email" => $email,
             "name" => "$conversation->username",
             "subject" => $platform->name." ticket from ".$conversation->username,
-            "message" => join(array_map(fn ($m) => $m->encode(),$messages)),
+            "message" => sizeof($messages) > 0 ? join(array_map(fn ($m) => $m->encode(),$messages)) : "🏳️‍⚧️ Message format not Supported 🏳️‍⚧️",
             "attachments" => $attachments,
             "type" => "text/html"
             );
@@ -276,8 +269,8 @@ class SocialLinkPlugin extends Plugin
             $ticket->getId(),
             $conversation->user_id,
             $platform,
-            $messages[0]->time,
-            $messages[count($messages) - 1]->time,
+            sizeof($messages) > 0 ? $messages[0]->time : $conversation->updated_time,
+            sizeof($messages) > 0 ? $messages[count($messages) - 1]->time : $conversation->updated_time,
         ), $error);
         $ticket->releaseLock();
     }
@@ -303,6 +296,35 @@ class SocialLinkPlugin extends Plugin
         $end_time = $messages[count($messages) - 1]->time;
         SocialLinkDB\updateEndTime(
             $most_recent_session, $end_time, $error);
+        $ticket->releaseLock();
+    }
+
+    private function updateUnhandledSession(
+        SocialLinkDB\SocialSession $most_recent_session,
+        $timestamp,
+        &$error)
+    {
+        $ticket = Ticket::lookup($most_recent_session->ticket_id);
+
+        if ($ticket === null)
+        {
+            $error = "couldn't find ticket \"$most_recent_session->ticket_id\"";
+            return;
+        }
+
+        if ($error !== null)
+            return;
+        
+        SocialLinkDB\updateEndTime(
+            $most_recent_session, $timestamp, $error);
+
+        $note = $ticket->logNote("Instagram Event", "Unhandled Instagram message/event.", $poster='SYSTEM', $alert=false);
+        if ($note === null)
+        {
+            $ticket_id = $ticket->getId();
+            $error = "unable to post message to thread? ticket_id \"$ticket_id\"";
+        }
+
         $ticket->releaseLock();
     }
 
@@ -333,6 +355,8 @@ class SocialLinkPlugin extends Plugin
 
         foreach ($conversations as $conversation)
         {
+            $error = null;
+
             // reject the session if update time is before the 'zero hour'.
             // this avoids the issue where upon going live a new ticket is
             // made for EVERY SINGLE DIRECT MESSAGE WE HAVE EVER RECIEVED
@@ -346,6 +370,7 @@ class SocialLinkPlugin extends Plugin
 
             if ($error !== null) {
                 SCHLORP("Error fetching associated sessions: \"$error\".");
+                SCHLORP("Conversation: ".(print_r($conversation, true)), SCHLORPNESS::DEBUG);
                 return;
             }
 
@@ -386,13 +411,25 @@ class SocialLinkPlugin extends Plugin
                 return;
             }
 
-            if($new_session)
-                $this->newSession($conversation, $messages, SocialLinkDB\Platform::Instagram, $error);
-            else
-                $this->updateSession($most_recent_session, $messages, $error);
+            if (!$first_session && sizeof($messages) == 0){
+            }
 
-            if ($error !== null)
-                SCHLORP("GOD FUCKING DAMN IT. I nearly had it there: \"$error\"");
+            if($new_session) {
+                $this->newSession($conversation, $messages, SocialLinkDB\Platform::Instagram, $error);
+            }
+            else {
+                if (sizeof($messages) == 0){
+                    $this->updateUnhandledSession($most_recent_session, $conversation->updated_time,$error);
+                }
+                else{
+                    $this->updateSession($most_recent_session, $messages, $error);
+                }
+            }
+
+            if ($error !== null) {
+                SCHLORP("GOD FUCKING DAMN IT. I nearly had it there (new session: ".($new_session ? "yes" : "no")."): \"$error\"");
+            }
+            
         }
 
     }
