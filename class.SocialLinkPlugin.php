@@ -77,11 +77,47 @@ class SocialLinkPlugin extends Plugin
                 SCHLORP("Database initialisation failed: $error");
             }
 
+            if (self::isTicketsView()) {
+                ob_start();
+                register_shutdown_function(
+                    function () {
+                        static::shutdownHandler($this);
+                    }
+                );
+            }
+
         } catch (Exception $e) {
             SCHLORP(print_r($e, true));
         }
 
     }
+
+    public static function shutdownHandler(self $plugin)
+    {
+        $html = ob_get_clean();
+        $dom = $plugin->getDom($html);
+
+        $ticket_id = $_GET['id'];
+        $error = null;
+
+        $is_social_link = SocialLinkDB\getSocialSessionFromTicketId($ticket_id, $error) !== null;
+        if (!$is_social_link)
+        {
+            print $html;
+            return;
+        }
+
+        $script = $dom->createElement("script");
+        $script->textContent =
+            "alert(\"Kate and Trin were at this location. Also $ticket_id \");";
+
+
+        $dom->appendChild($script);
+
+        $new_html = $plugin->printDom($dom);
+        print $new_html;
+    }
+
     public function cron($data)
     {
         $this->requestSync($this, $data);
@@ -145,7 +181,7 @@ class SocialLinkPlugin extends Plugin
     {
 
         // Get associated ticket
-        $ticketId = $entry->getThreadId();
+        $ticketId = Ticket::lookup($entry->getThread()->getPid());
 
         if ($ticketId === null){
             SCHLORP("TICKET ID IS NULL. WHY");
@@ -459,6 +495,63 @@ class SocialLinkPlugin extends Plugin
             return;
         }
         parent::uninstall($errors);
+    }
+    // -- DOM DWEEDY DOM DWEEDY DEE DEE DOMMY DOMMY DOM -------------------------------
+    /**
+     * Gets the DOM back as HTML
+     *
+     * @param  DOMDocument  $dom
+     *
+     * @return bool|string
+     */
+    public function printDom(DOMDocument $dom): bool|string
+    {
+        SCHLORP("Converting the DOM back to HTML", SCHLORPNESS::DEBUG);
+        // Check for failure to generate HTML
+        // DOMDocument::saveHTML() returns null on error
+        $new_html = $dom->saveHTML();
+
+        // Remove the DOMDocument make-happy encoding prefix:
+        if (self::isPjax()) {
+            $remove_prefix_pattern = '@<\?xml encoding="UTF-8" />@';
+            $new_html = preg_replace($remove_prefix_pattern, '', $new_html);
+        }
+        return $new_html;
+    }
+    public static function isPjax(): bool
+    {
+        return (isset($_SERVER['HTTP_X_PJAX']) && $_SERVER['HTTP_X_PJAX'] == 'true');
+    }
+    public function getDom($html = ''): DOMDocument
+    {
+        $dom = new \DOMDocument('1.0', 'UTF-8');
+        $dom->validateOnParse = true;
+        $dom->resolveExternals = true;
+        $dom->preserveWhiteSpace = false;
+        // Turn off XML errors.. if only it was that easy right?
+        $dom->strictErrorChecking = false;
+        $xml_error_setting = libxml_use_internal_errors(true);
+
+        // Because PJax isn't a full document, it kinda breaks DOMDocument
+        // Which expects a full document! (You know with a DOCTYPE, <HTML> <BODY> etc.. )
+        if (self::isPjax() &&
+          (!str_starts_with($html, '<!DOCTYPE') || !str_starts_with($html, '<html'))) {
+            // Prefix the non-doctyped html snippet with an xml prefix
+            // This tricks DOMDocument into loading the HTML snippet
+            $xml_prefix = '<?xml encoding="UTF-8" />';
+            $html = $xml_prefix.$html;
+        }
+
+        // Convert the HTML into a DOMDocument, however, don't imply it's HTML, and don't insert a default Document Type Template
+        // Note, we can't use the Options parameter until PHP 5.4 http://php.net/manual/en/domdocument.loadhtml.php
+        if (!($loaded = $dom->loadHTML($html))) {
+            SCHLORP("There was a problem loading the DOM.", SCHLORPNESS::DEBUG);
+        } else {
+            SCHLORP("%d chars of HTML was inserted into a DOM", SCHLORPNESS::DEBUG);
+        }
+        libxml_use_internal_errors($xml_error_setting); // restore xml parser error handlers
+        SCHLORP('DOM Loaded.', SCHLORPNESS::DEBUG);
+        return $dom;
     }
 }
 ?>
