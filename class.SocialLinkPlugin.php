@@ -97,6 +97,12 @@ class SocialLinkPlugin extends Plugin
         $dom = $plugin->getDom($html);
 
         $ticket_id = $_GET['id'];
+        if ($ticket_id === null)
+        {
+            print $html;
+            return;
+        }
+
         $error = null;
 
         $is_social_link = SocialLinkDB\getSocialSessionFromTicketId($ticket_id, $error) !== null;
@@ -107,7 +113,11 @@ class SocialLinkPlugin extends Plugin
         }
 
         $select = $dom->getElementById("reply-to");
-        // null?
+        if ($select === null)
+        {
+            print $html;
+            return;
+        }
         $select->setAttribute("disabled", ":3");
                 
         foreach($select->getElementsByTagName("option") as $option)
