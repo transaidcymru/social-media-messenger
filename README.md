@@ -3,14 +3,14 @@ Integrate osTicket with social media platforms!!!!
 
 Syncs Instagram DMs as ticket threads. Receive & send messages directly from osTicket, managing and assigning them as regular tickets!
 
-## Features
+### Features
 - Receive Instagram direct messages in osTicket blazingly fast via Instagram API webhooks
 - Reply to Instagram messages within osTicket itself
 - Automatically sync messages on Instagram from a configured date (within the limits of the Instagram API)
 - Handles messages sent by your Instagram account outside of osTicket seamlessly, syncing them with existing tickets
 - Supports images!
 
-## Limitations
+### Limitations
 - Most limitations are derived from the Instagram Messaging API itself; for instance certain format messages are unsupported.
 - You must configure a verified Instagram business account + Facebook developer account to deploy the plugin.
 - You must follow Facebook/Meta's terms of use (e.g. provide a public privacy policy) in order to use the Instagram API.
