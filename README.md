@@ -16,7 +16,8 @@ Syncs Instagram DMs as ticket threads. Receive & send messages directly from osT
 - Most limitations are derived from the Instagram Messaging API itself; for instance certain format messages are unsupported.
 - You must configure a verified Instagram business account + Facebook developer account to deploy the plugin.
 - You must follow Facebook/Meta's terms of use (e.g. provide a public privacy policy) in order to use the Instagram API.
-- We currently only support one Instagram account; down the line we may consider adding other social media APIs. Or you could contribute code to do so!
+- We currently only support one Instagram account
+- We only support Instagram at time of writing. Down the line we may consider adding other social media APIs. Or you could contribute support for other platforms!
 
 ## Install
 TODO
