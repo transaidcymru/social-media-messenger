@@ -24,7 +24,7 @@ tl;dr deploy the plugin on your osTicket instance as you would any other plugin;
 MIT
 
 ## Contributing
-Contributions are welcome, especially improvements to the existing plugin features and adding support for other services. However please bear in mind that we are a volunteer organisation who made this plugin for our own purposes primarily so maintenance of this project is ad-hoc; we are not paid for this work.
+Contributions are welcome, especially improvements to the existing plugin features and adding support for services other than Instagram. However please bear in mind that we are a volunteer organisation who made this plugin for our own purposes primarily so maintenance of this project is ad-hoc; we are not paid for this work.
 
 ## Donations
 We currently don't take donations directly for this project or the other software projects we do.
