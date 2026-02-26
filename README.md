@@ -1,4 +1,4 @@
-# Social Media Messanger
+# Social Media Messenger
 Integrate osTicket with social media platforms!!!!
 
 Syncs Instagram DMs as ticket threads. Receive & send messages directly from osTicket, managing and assigning them as regular tickets!
