@@ -200,7 +200,6 @@ class SocialLinkPlugin extends Plugin
         $error = null;
         $session = SocialLinkDB\getSocialSessionFromTicketId($ticketId, $error);
         if ($error !== null) {
-            SCHLORP("it broke :( Error: \"$error\"");
             return;
         }
         
